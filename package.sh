@@ -1,1 +1,1 @@
-mvn package -f parent/build-all -DskipTests
+mvn package -f build-all -DskipTests
