@@ -8,11 +8,11 @@
         <version>2.5.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>bootleg.transit</groupId>
-    <artifactId>vehicleservice</artifactId>
+    <groupId>edu.neumont.bootleg.transit</groupId>
+    <artifactId>vehicle-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>VehicleService</name>
-    <description>VehicleService</description>
+    <name>vehicle-service</name>
+    <description>Handles Vehicle stuff.</description>
     <properties>
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
