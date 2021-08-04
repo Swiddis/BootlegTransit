@@ -7,5 +7,10 @@ const port = 3000;
 
 app.get('/', routes.index);
 
-app.listen(port);
-console.log("Server started at http://localhost:" + port)
+app.listen(port, (err) => {
+    if (err) {
+        console.log("Error starting app.");
+        console.log(err);
+    }
+    console.log("Server started at http://localhost:" + port)
+});

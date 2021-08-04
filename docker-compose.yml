@@ -2,15 +2,31 @@ version: '3.9'
 
 services:
   transit-mysql:
-    build:
-      context: ./mysql
+    image: mysql
     container_name: transit-mysql
     cap_add:
       - SYS_NICE  # CAP_SYS_NICE
     ports:
       - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: transit
+      MYSQL_USER: Travja
+      MYSQL_PASSWORD: test
     volumes:
-      - ./mysql/data:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
+    networks:
+      - transit
+
+  transit-mongo:
+    image: mongo
+    restart: always
+    container_name: transit-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Travja
+      MONGO_INITDB_ROOT_PASSWORD: test
+    volumes:
+      - ./data/mongo:/data/db
     networks:
       - transit
 
@@ -19,11 +35,11 @@ services:
     build:
       context: ./eureka-server
     ports:
-    - 8761:8761
+      - 8761:8761
     expose:
-    - 8761
+      - 8761
     networks:
-    - transit
+      - transit
 
   cloud-gateway:
     build:
@@ -39,7 +55,7 @@ services:
       - 8080
     environment:
       - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
+      - DATABASE_NAME=transit
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
@@ -53,7 +69,7 @@ services:
       context: ./notifications-service
     #    container_name: transit-catalog
     depends_on:
-      - transit-mysql
+      - transit-mongo
       - eureka-server
     restart: always
     #    ports:
@@ -61,13 +77,12 @@ services:
     expose:
       - 8080
     environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
+      - MONGO_HOST=transit-mongo
+      - MONGO_USERNAME=Travja
+      - MONGO_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=catalog-service
+      - APP_NAME=notifications-service
     networks:
       - transit
   #    scale: 3
@@ -86,12 +101,12 @@ services:
       - 8080
     environment:
       - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
+      - DATABASE_NAME=transit
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=cart-service
+      - APP_NAME=schedule-service
     networks:
       - transit
   #    scale: 3
@@ -110,12 +125,12 @@ services:
       - 8080
     environment:
       - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
+      - DATABASE_NAME=transit
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=checkout-service
+      - APP_NAME=stops-service
     networks:
       - transit
   #    scale: 3
@@ -133,13 +148,12 @@ services:
     expose:
       - 8080
     environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
+      - MONGO_HOST=transit-mongo
+      - MONGO_USERNAME=Travja
+      - MONGO_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=order-service
+      - APP_NAME=user-service
     networks:
       - transit
   #    scale: 3
@@ -158,12 +172,12 @@ services:
       - 8080
     environment:
       - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=ecom
+      - DATABASE_NAME=transit
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=card-service
+      - APP_NAME=vehicle-service
     networks:
       - transit
   #    scale: 3
