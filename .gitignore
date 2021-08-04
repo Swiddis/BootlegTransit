@@ -12,6 +12,8 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
+*.iml
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -134,7 +136,7 @@ fabric.properties
 hs_err_pid*
 
 ### Maven ###
-target/
+**/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup

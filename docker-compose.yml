@@ -1,0 +1,207 @@
+version: '3.9'
+
+services:
+  discovery:
+    container_name: discovery
+    build:
+      context: ./modules/discovery
+    ports:
+      - 5000:5000
+    networks:
+      - ecommerce
+
+  ecommerce-mysql:
+    build:
+      context: ./util/docker/mysql
+    container_name: ecommerce-mysql
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    ports:
+      - 3307:3306
+    volumes:
+      - ./util/docker/mysql/data:/var/lib/mysql
+    networks:
+      - ecommerce
+
+  ecommerce-catalog:
+    build:
+      context: ./modules/catalog
+#    container_name: ecommerce-catalog
+    depends_on:
+      - ecommerce-mysql
+    restart: always
+#    ports:
+#      - 8080:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=catalog-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  ecommerce-carts:
+    build:
+      context: ./modules/cart
+#    container_name: ecommerce-carts
+    depends_on:
+      - ecommerce-mysql
+    restart: always
+#    ports:
+#      - 8081:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=cart-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  ecommerce-checkout:
+    build:
+      context: ./modules/checkout
+#    container_name: ecommerce-checkout
+    depends_on:
+      - ecommerce-mysql
+    restart: always
+#    ports:
+#      - 8082:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=checkout-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  ecommerce-orders:
+    build:
+      context: ./modules/orders
+#    container_name: ecommerce-orders
+    depends_on:
+      - ecommerce-mysql
+    restart: always
+#    ports:
+#      - 8085:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=order-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  card-service:
+    build:
+      context: ./modules/card
+#    container_name: card-service
+    depends_on:
+      - ecommerce-mysql
+      - discovery
+    restart: always
+#    ports:
+#      - 8083:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=card-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  email-service:
+    build:
+      context: ./modules/email
+#    container_name: email-service
+    depends_on:
+      - ecommerce-mysql
+    restart: always
+#    ports:
+#      - 8084:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=email-service
+    networks:
+      - ecommerce
+    scale: 3
+
+  gateway:
+    build:
+      context: ./modules/gateway
+    container_name: gateway
+    depends_on:
+      - ecommerce-mysql
+      - discovery
+    restart: always
+    ports:
+      - 8070:8080
+    expose:
+      - 8080
+    environment:
+      - DATABASE_HOST=ecommerce-mysql
+      - DATABASE_NAME=ecom
+      - DATABASE_USERNAME=Travja
+      - DATABASE_PASSWORD=test
+      - SERVER_PORT=8080
+      - REGISTRY_HOST=discovery
+      - APP_NAME=gateway-service
+    networks:
+      - ecommerce
+
+  node:
+    build:
+      context: ./modules/ecommerce
+    container_name: node
+    depends_on:
+      - ecommerce-catalog
+      - ecommerce-mysql
+      - ecommerce-carts
+      - ecommerce-checkout
+    restart: always
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    networks:
+      - ecommerce
+
+networks:
+  ecommerce:
+    name: ecommerce
