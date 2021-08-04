@@ -19,7 +19,7 @@ services:
     build:
       context: ./eureka-server
     ports:
-      - 5000:5000
+      - 8761:8761
     networks:
       - transit
 
