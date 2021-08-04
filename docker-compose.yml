@@ -19,9 +19,11 @@ services:
     build:
       context: ./eureka-server
     ports:
-      - 8761:8761
+    - 8761:8761
+    expose:
+    - 8761
     networks:
-      - transit
+    - transit
 
   cloud-gateway:
     build:
@@ -41,7 +43,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=gateway-service
     networks:
       - transit
@@ -64,7 +66,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=catalog-service
     networks:
       - transit
@@ -88,7 +90,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=cart-service
     networks:
       - transit
@@ -112,7 +114,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=checkout-service
     networks:
       - transit
@@ -136,7 +138,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=order-service
     networks:
       - transit
@@ -160,7 +162,7 @@ services:
       - DATABASE_USERNAME=Travja
       - DATABASE_PASSWORD=test
       - SERVER_PORT=8080
-      - REGISTRY_HOST=discovery
+      - REGISTRY_HOST=eureka-server
       - APP_NAME=card-service
     networks:
       - transit

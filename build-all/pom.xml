@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>../dependencies</module>
         <module>../cloud-gateway</module>
         <module>../eureka-server</module>
         <module>../notifications-service</module>
