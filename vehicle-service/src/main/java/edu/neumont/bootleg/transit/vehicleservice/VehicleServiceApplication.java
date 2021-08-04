@@ -1,4 +1,4 @@
-package bootleg.transit.vehicleservice;
+package edu.neumont.bootleg.transit.vehicleservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
