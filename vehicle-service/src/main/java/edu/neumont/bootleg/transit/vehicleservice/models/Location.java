@@ -1,5 +1,6 @@
 package edu.neumont.bootleg.transit.vehicleservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,6 @@ public class Location {
     private Double lng;
 
     @OneToOne(mappedBy="location")
+    @JsonIgnore
     private Vehicle vehicle;
 }

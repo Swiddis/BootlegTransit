@@ -1,5 +1,6 @@
 package edu.neumont.bootleg.transit.stopsservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,5 +22,6 @@ public class Stop {
     private String address;
 
     @ManyToOne
+    @JsonIgnore
     private Route route;
 }
