@@ -27,7 +27,9 @@ public class Vehicle {
     @Column(name = "vehicle_route_idx")
     private Integer routeIdx;
 
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    @OneToOne
-    private Location location;
+    @Column(name = "vehicle_location_lat")
+    private Double lat;
+
+    @Column(name = "vehicle_location_lng")
+    private Double lng;
 }

@@ -7,10 +7,8 @@ sample_vehicles = [{
     "name": "Bus1",
     "routeId": 1,
     "routeIdx": 0,
-    "location": {
-        "lat": 0.0,
-        "lng": 0.0
-    }
+    "lat": 0.0,
+    "lng": 0.0
 }]
 
 post_req = requests.post(
@@ -19,8 +17,12 @@ post_req = requests.post(
     data = json.dumps(sample_vehicles[0])
 )
 
-assert post_req.status_code == 200
-sample_vehicles[0].update(json.loads(post_req.text))
+try:
+    assert post_req.status_code == 200
+    sample_vehicles[0].update(json.loads(post_req.text))
+except AssertionError:
+    print(post_req.status_code)
+    print(post_req.text)
 
 # Stop tests
 
@@ -37,5 +39,9 @@ post_req = requests.post(
     data = json.dumps(sample_routes[0])
 )
 
-assert post_req.status_code == 200
-sample_routes[0].update(json.loads(post_req.text))
+try:
+    assert post_req.status_code == 200
+    sample_routes[0].update(json.loads(post_req.text))
+except AssertionError:
+    print(post_req.status_code)
+    print(post_req.text)

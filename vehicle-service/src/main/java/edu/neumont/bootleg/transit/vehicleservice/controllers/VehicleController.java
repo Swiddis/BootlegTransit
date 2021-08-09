@@ -36,8 +36,11 @@ public class VehicleController {
         if (vehicle.getName() != null) {
             updating.setName(vehicle.getName());
         }
-        if (vehicle.getLocation() != null) {
-            updating.setLocation(vehicle.getLocation());
+        if (vehicle.getLat() != null) {
+            updating.setLat(vehicle.getLat());
+        }
+        if (vehicle.getLng() != null) {
+            updating.setLng(vehicle.getLng());
         }
         if (vehicle.getRouteId() != null) {
             updating.setRouteId(vehicle.getRouteId());
