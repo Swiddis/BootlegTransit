@@ -1,0 +1,14 @@
+/* 
+Color scheme:
+#588b8b (Teal)
+#f28f3b (Orange)
+#c8553d (Red)
+#f1f3f4 (Light Gray)
+#0a2239 (Dark Blue)
+*/
+
+body {
+    background-color: #f1f3f4;
+    color: #0a2239;
+    font-family: Arial, Helvetica, sans-serif;
+}
