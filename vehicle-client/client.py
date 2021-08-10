@@ -24,7 +24,7 @@ def random_ellipse(width, height=None):
 
 def create_vehicle():
     vehicle = {
-        "name": "Bus" + str(random.randint(10**8, 10**9-1)),
+        "name": random.choice(["Bus", "Car", "Train"]) + str(random.randint(10**8, 10**9-1)),
         "routeId": 0,
         "routeIdx": 0,
         "lat": 0.0,
