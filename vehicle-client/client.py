@@ -42,10 +42,10 @@ def create_vehicle():
     return json.loads(post_req.text)
 
 def update_vehicle(vehicle):
-    update_lat, update_lng = random_ellipse(1)
+    update_lat, update_lng = random_ellipse(5)
     updates = {
-        "lat": round(vehicle["lat"] + update_lat, 4),
-        "lng": round(vehicle["lng"] + update_lng, 4)
+        "lat": max(min(round(vehicle["lat"] + update_lat, 4), 180), -180),
+        "lng": max(min(round(vehicle["lng"] + update_lng, 4), 90), -90)
     }
 
     patch_req = requests.patch(
