@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "route")
@@ -22,7 +21,7 @@ public class Route {
 
     @OneToMany(mappedBy = "route")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<Stop> stops = new ArrayList<>();
+    private List<Stop> stops;
 
     public void addStop(Stop stop) {
         stops.add(stop);
