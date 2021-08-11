@@ -58,5 +58,7 @@ public class UserRestController {
         repo.deleteById(username);
     }
 
-
+    @GetMapping("/auth")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void authenticateUser() {}
 }

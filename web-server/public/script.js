@@ -1,5 +1,26 @@
 let ctx = document.getElementById("canvas").getContext("2d");
 
+const verify_login = () => {
+    // let user = document.getElementById("login_user").value;
+    // let pass = document.getElementById("login_pass").value;
+
+    // fetch(
+    //     "http://localhost:8070/user-service/auth", {
+    //         headers: {
+    //             "Authorization": "Basic " + btoa(user + ":" + pass)
+    //         }
+    //     }
+    // ).then(response => {
+    //     console.log(response);
+    //     return response.status == 204;
+    // }).catch(err => {
+    //     console.error(err);
+    //     return false;
+    // });
+
+    return true;
+}
+
 const vehicle_track = () => {
     fetch(
         "http://localhost:8070/vehicle-service/vehicle"
@@ -31,6 +52,7 @@ const vehicle_track = () => {
 }
 
 const login = () => {
+    if (!verify_login()) return;
     document.getElementById("title").style.display = "none";
     document.getElementById("login").style.display = "none";
     document.getElementById("main").style.display = "block";
