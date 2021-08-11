@@ -19,7 +19,19 @@ public class Route {
     @Column(name = "route_id")
     private Long id;
 
-    @OneToMany(mappedBy="route")
+    @OneToMany(mappedBy = "route")
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Stop> stops;
+
+    public void addStop(Stop stop) {
+        stops.add(stop);
+    }
+
+    public void setStop(int index, Stop stop) {
+        stops.set(index, stop);
+    }
+
+    public boolean hasStop(long stopId) {
+        return stops.stream().filter(stop -> stop.getId() == stopId).count() > 0;
+    }
 }
