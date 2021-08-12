@@ -7,7 +7,13 @@ import json
 def main():
     VEHICLE_COUNT = 5
 
-    vehicles = [create_vehicle() for _ in range(VEHICLE_COUNT)]
+    get_vehicles = requests.get(
+        "http://localhost:8070/vehicle-service/vehicle",
+        headers = {"Content-Type": "application/json"}
+    )
+    vehicles = json.loads(get_vehicles.text)
+
+    vehicles += [create_vehicle() for _ in range(VEHICLE_COUNT - len(vehicles))]
 
     while True:
         time.sleep(random.random())
