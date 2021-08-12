@@ -7,38 +7,98 @@ Color scheme:
 #0a2239 (Dark Blue)
 */
 
+html {
+  width: 100%;
+  height: 100%;
+}
+
 body {
-    background-color: #f1f3f4;
-    color: #0a2239;
-    font-family: Arial, Helvetica, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  background-color: #f1f3f4;
+  color: #0a2239;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
 #title {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 15%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  /* margin-top: 15%; */
 }
 
 #login {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+#main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  height: 100%;
+  width: 100%;
+}
+
+#main_header {
+  display: flex;
+  min-height: 100px;
+  box-sizing: border-box;
+}
+
+#main_center {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+
+.center_div {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    background-color: #0a2239;
+    color: white;
+}
+
+#center_map {
+    flex: 5;
+    background-color: #588b8b;
+}
+
+#center_notifs {
+    padding-top: 0px;
+}
+
+.notification {
+    background-color: #f1f3f4;
+    padding: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: black;
 }
 
 input {
-    padding: 5px;
-    margin: 5px;
-    border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 10px;
 }
 
 button {
-    padding: 5px;
-    margin: 5px;
+  padding: 5px;
+  margin: 5px;
+}
+
+p, b {
+    margin: 0px;
 }

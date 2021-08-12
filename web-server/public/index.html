@@ -19,11 +19,30 @@
         <button onclick="login()">Login</button>
     </div>
     <div id="main" style="display: none;">
-        <h1>Logged In</h1>
+        <div id="main_header" class="main_div">
+            <p>Header</p>
+        </div>
+        <div id="main_center" class="main_div">
+            <div id="center_routes" class="center_div">
+                <p>Routes</p>
+            </div>
+            <div id="center_map" class="center_div">
+                <!-- <canvas id="canvas" width="1000", height="500">
+                </canvas> -->
+                <p>Map</p>
+            </div>
+            <div id="center_notifs" class="center_div">
+                <div class="notification">
+                    <p><b>Title</b></p>
+                    <p>This is a sample notification</p>
+                </div>
+                <div class="notification">
+                    <p><b>Title 2</b></p>
+                    <p>This is another sample notification that has word wrapping</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <canvas id="canvas" style="display: none;" width="1000" height="800">
-        Test canvas
-    </canvas>
     <script src="script.js"></script>
 </body>
 </html>
