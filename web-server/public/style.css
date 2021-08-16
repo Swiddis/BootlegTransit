@@ -72,6 +72,8 @@ body {
 }
 
 #center_map {
+    display: flex;
+    flex-direction: column;
     flex: 5;
     background-color: #588b8b;
 }
@@ -101,4 +103,9 @@ button {
 
 p, b {
     margin: 0px;
+}
+
+#myMap {
+    flex-grow: 1;
+    width: 100%;
 }

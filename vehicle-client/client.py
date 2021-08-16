@@ -49,6 +49,10 @@ def create_vehicle():
 
 def update_vehicle(vehicle):
     update_lat, update_lng = random_ellipse(5)
+    if "lat" not in vehicle:
+        vehicle["lat"] = 0
+    if "lng" not in vehicle:
+        vehicle["lng"] = 0
     updates = {
         "lat": max(min(round(vehicle["lat"] + update_lat, 4), 180), -180),
         "lng": max(min(round(vehicle["lng"] + update_lng, 4), 90), -90)
