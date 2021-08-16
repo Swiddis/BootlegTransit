@@ -87,10 +87,16 @@ body {
   align-items: center;
   align-content: center;
   margin: 20px;
-  width: 120px;
+  padding: 15px;
   background-color: #f28f3b;
   border: 2px solid #c8553d;
+  font-size: 18px;
   border-radius: 10px;
+  transition: 0.2s ease-in-out; 
+}
+
+#logout_btn:hover {
+  background-color: #d26f1b;
 }
 
 .notification {
