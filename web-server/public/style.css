@@ -92,27 +92,14 @@ body {
   border: 2px solid #c8553d;
   font-size: 18px;
   border-radius: 10px;
-  transition: 0.2s ease-in-out; 
+  transition: 0.2s ease-in-out;
 }
 
 #logout_btn:hover {
   background-color: #d26f1b;
 }
 
-.notification {
-  background-color: #f1f3f4;
-  padding: 5px;
-  border-radius: 10px;
-  margin-top: 10px;
-  color: black;
-  font-size: 18px;
-}
-
-.notification i {
-  color: #444;
-  font-size: 14px;
-}
-
+.notification,
 .routebox {
   background-color: #f1f3f4;
   padding: 5px;
@@ -120,8 +107,10 @@ body {
   margin-top: 10px;
   color: black;
   font-size: 18px;
+  padding: 10px;
 }
 
+.notification i,
 .routebox i {
   color: #444;
   font-size: 14px;
