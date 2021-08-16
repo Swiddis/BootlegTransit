@@ -52,6 +52,7 @@ body {
   display: flex;
   min-height: 100px;
   box-sizing: border-box;
+  background-color: #588b8b;
 }
 
 #main_center {
@@ -72,11 +73,24 @@ body {
 
 #center_map {
   flex: 5;
-  background-color: #588b8b;
+  background-color: #084b4b;
 }
 
 #center_notifs {
   padding-top: 0px;
+}
+
+#logout_btn {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  margin: 20px;
+  width: 120px;
+  background-color: #f28f3b;
+  border: 2px solid #c8553d;
+  border-radius: 10px;
 }
 
 .notification {
