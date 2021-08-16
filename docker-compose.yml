@@ -28,10 +28,15 @@ services:
     restart: always
     container_name: transit-mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: Travja
-      MONGO_INITDB_ROOT_PASSWORD: test
+      - MONGO_INITDB_ROOT_USERNAME=Travja
+      - MONGO_INITDB_ROOT_PASSWORD=test
+      - MONGO_INITDB_DATABASE=transit
     volumes:
       - ./data/mongo:/data/db
+    ports:
+      - 27018:27017
+    expose:
+      - 27018
     networks:
       - transit
 
