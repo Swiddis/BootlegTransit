@@ -1,3 +1,6 @@
-CALL mvn package -f build-all -DskipTests && docker-compose up --build & docker-compose down & docker image prune -f
+CALL mvn package -f build-all -DskipTests
+CALL docker-compose up --build
+CALL docker-compose down
+CALL docker image prune -f
 
-pause
+PAUSE
