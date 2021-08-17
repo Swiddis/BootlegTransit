@@ -42,7 +42,7 @@ public class UserRestController {
                 us.setEmail(from.getEmail());
 
             if (from.getPassword() != null)
-                us.setPassword(from.getPassword());
+                us.setHash(from.getPassword());
 
             repo.save(us);
             return us;

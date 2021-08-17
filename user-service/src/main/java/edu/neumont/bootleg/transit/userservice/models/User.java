@@ -46,4 +46,8 @@ public class User {
     public void setPassword(String password) {
         this.password = encoder.encode(password);
     }
+
+    public void setHash(String hash) {
+        this.password = hash;
+    }
 }

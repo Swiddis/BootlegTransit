@@ -1,8 +1,12 @@
 package edu.neumont.bootleg.transit.cloudgateway;
 
+import edu.neumont.bootleg.transit.cloudgateway.services.SecurityUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
@@ -26,16 +30,16 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public MapReactiveUserDetailsService userDetailsService() {
-        UserDetails user = User
-                .withUsername("user")
-                .password("password")
-                .roles("USER")
-                .passwordEncoder(bcryptEncoder::encode)
-                .build();
-        return new MapReactiveUserDetailsService(user);
-    }
+//    @Bean
+//    public MapReactiveUserDetailsService userDetailsService() {
+//        UserDetails user = User
+//                .withUsername("user")
+//                .password("password")
+//                .roles("USER")
+//                .passwordEncoder(bcryptEncoder::encode)
+//                .build();
+//        return new MapReactiveUserDetailsService(user);
+//    }
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
