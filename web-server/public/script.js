@@ -76,6 +76,16 @@ let showPosition = (position) => {
         "\nLongitude: " + position.coords.longitude);
 };
 
+let openModal = veh => {
+    let modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    document.body.appendChild(modal);
+    modal.onclick = evt => {
+        document.body.removeChild(modal);
+    };
+};
+
 let map;
 let userLocation;
 
@@ -148,7 +158,10 @@ let loadMapScenario = () => {
                             }, '/car.png',
                             {width: 80, height: 25}, (pin) => {
                                 pin.setOptions({title: veh.name});
-                                map.entities.push(pin)
+                                map.entities.push(pin);
+                                Microsoft.Maps.Events.addHandler(pin, 'click', () => {
+                                    openModal(veh);
+                                });
                             });
                         // let pin = new Microsoft.Maps.Pushpin({
                         //     latitude: veh.lat ? veh.lat : 0,

@@ -109,3 +109,11 @@ p, b {
     flex-grow: 1;
     width: 100%;
 }
+
+.modal {
+    width: 1000vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
