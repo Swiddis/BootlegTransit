@@ -72,8 +72,11 @@ body {
 }
 
 #center_map {
+  display: flex;
+  flex-direction: column;
   flex: 5;
-  background-color: #084b4b;
+  background-color: #f1f3f4;
+  padding: 0px;
 }
 
 #center_notifs {
@@ -130,4 +133,17 @@ button {
 p,
 b {
   margin: 0px;
+}
+
+#myMap {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.modal {
+    width: 1000vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
