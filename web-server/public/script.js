@@ -52,11 +52,36 @@ const vehicle_track = (callback) => {
     )
 }
 
+const loadNotifications = () => {
+    fetch(
+        "http://localhost:8070/notifications-service/notification/active"
+    ).then(
+        response => response.json()
+    ).then(
+        responses => {
+            let notifs = document.getElementById("center_notifs");
+            let content = "";
+
+            for (let response of responses) {
+                content += `<div class="notification">
+                    <p><b>${response.title}</b></p>
+                    <p>${response.body}</p>
+                </div>`;
+            }
+
+            notifs.innerHTML = content;
+        }
+    ).catch(
+        err => console.error(err)
+    );
+}
+
 const login = () => {
     // if (!verify_login()) return;
     document.getElementById("title").style.display = "none";
     document.getElementById("login").style.display = "none";
     document.getElementById("main").style.display = "flex";
+    loadNotifications();
     // document.getElementById("canvas").style.display = "block";
     // setInterval(() => vehicle_track(render_vehicles), 1000);
     return true;

@@ -53,6 +53,7 @@ body {
   display: flex;
   min-height: 100px;
   box-sizing: border-box;
+  background-color: #588b8b;
 }
 
 #main_center {
@@ -75,7 +76,8 @@ body {
     display: flex;
     flex-direction: column;
     flex: 5;
-    background-color: #588b8b;
+    background-color: #f1f3f4;
+    padding: 0px;
 }
 
 #center_notifs {

@@ -1,29 +1,23 @@
 package edu.neumont.bootleg.transit.notificationsservice.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Document
+@Data
 public class Notification {
-
     @Id
-    @Getter
-    public int id;
+    public Long id = new SecureRandom().nextLong();
 
-    @Getter
-    @Setter
     public String title, body;
 
-    @Getter
-    @Setter
-    public LocalDateTime activeUtil;
+    public LocalDateTime activeUntil;
 
     public boolean isActive() {
-        return activeUtil.isAfter(LocalDateTime.now());
+        return activeUntil.isAfter(LocalDateTime.now());
     }
-
 }

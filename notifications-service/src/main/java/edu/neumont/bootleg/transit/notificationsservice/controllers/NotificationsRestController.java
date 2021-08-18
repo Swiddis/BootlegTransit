@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,11 @@ public class NotificationsRestController {
         return repo.findById(id);
     }
 
+    @GetMapping("/active")
+    public List<Notification> getActiveNotifications() {
+        return repo.findAllByActiveUntilGreaterThan(LocalDateTime.now());
+    }
+
     @PostMapping
     public Notification createNotification(@RequestBody Notification Notification) {
         return repo.save(Notification);
@@ -44,8 +50,8 @@ public class NotificationsRestController {
             if (from.getBody() != null)
                 notif.setBody(from.getBody());
 
-            if (from.getActiveUtil() != null)
-                notif.setActiveUtil(from.getActiveUtil());
+            if (from.getActiveUntil() != null)
+                notif.setActiveUntil(from.getActiveUntil());
 
             repo.save(notif);
             return notif;
