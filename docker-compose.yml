@@ -1,27 +1,27 @@
 version: '3.9'
 
 services:
-  transit-mysql:
-    image: mysql
-    container_name: transit-mysql
-    cap_add:
-      - SYS_NICE  # CAP_SYS_NICE
-    ports:
-      - 3307:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: test
-      MYSQL_DATABASE: transit
-      MYSQL_USER: Travja
-      MYSQL_PASSWORD: test
-    volumes:
-      - ./data/mysql:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "mysql", "-h", "localhost", "-P", "3306", "-u", "Travja", "--password=test", "-e", "select 1", "transit" ]
-      interval: 2s
-      timeout: 1s
-      retries: 20
-    networks:
-      - transit
+    transit-mysql:
+      image: mysql
+      container_name: transit-mysql
+      cap_add:
+        - SYS_NICE  # CAP_SYS_NICE
+      ports:
+        - 3307:3306
+      environment:
+        MYSQL_ROOT_PASSWORD: test
+        MYSQL_DATABASE: transit
+        MYSQL_USER: Travja
+        MYSQL_PASSWORD: test
+      volumes:
+        - ./data/mysql:/var/lib/mysql
+      healthcheck:
+        test: [ "CMD", "mysql", "-h", "localhost", "-P", "3306", "-u", "Travja", "--password=test", "-e", "select 1", "transit" ]
+        interval: 2s
+        timeout: 1s
+        retries: 20
+      networks:
+        - transit
 
   transit-mongo:
     image: mongo
@@ -56,36 +56,15 @@ services:
       context: ./cloud-gateway
     container_name: cloud-gateway
     depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - transit-mongo
+      - eureka-server
+    #      transit-mongo:
+    #        condition: service_healthy
+    #      eureka-server:
+    #        condition: service_started
     restart: always
     ports:
       - 8070:8080
-    expose:
-      - 8080
-    environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=transit
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
-      - SERVER_PORT=8080
-      - REGISTRY_HOST=eureka-server
-      - APP_NAME=gateway-service
-    networks:
-      - transit
-
-  notifications-service:
-    build:
-      context: ./notifications-service
-    #    container_name: transit-catalog
-    depends_on:
-      - transit-mongo
-      - eureka-server
-    restart: always
-    #    ports:
-    #      - 8080:8080
     expose:
       - 8080
     environment:
@@ -94,76 +73,100 @@ services:
       - MONGO_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
-      - APP_NAME=notifications-service
+      - APP_NAME=gateway-service
     networks:
       - transit
-  #    scale: 3
 
-  schedule-service:
-    build:
-      context: ./schedule-service
-    #    container_name: transit-carts
-    depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: always
-    #    ports:
-    #      - 8081:8080
-    expose:
-      - 8080
-    env_file:
-      - .env
-    environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=transit
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
-      - SERVER_PORT=8080
-      - REGISTRY_HOST=eureka-server
-      - APP_NAME=schedule-service
-    networks:
-      - transit
-  #    scale: 3
+    notifications-service:
+      build:
+        context: ./notifications-service
+      #    container_name: transit-catalog
+      depends_on:
+        - transit-mongo
+        - eureka-server
+      restart: always
+      #    ports:
+      #      - 8080:8080
+      expose:
+        - 8080
+      environment:
+        - MONGO_HOST=transit-mongo
+        - MONGO_USERNAME=Travja
+        - MONGO_PASSWORD=test
+        - SERVER_PORT=8080
+        - REGISTRY_HOST=eureka-server
+        - APP_NAME=notifications-service
+      networks:
+        - transit
+    #    scale: 3
 
-  stops-service:
-    build:
-      context: ./stops-service
-    #    container_name: transit-checkout
-    depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    restart: always
-    #    ports:
-    #      - 8082:8080
-    expose:
-      - 8080
-    env_file:
-      - .env
-    environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=transit
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
-      - SERVER_PORT=8080
-      - REGISTRY_HOST=eureka-server
-      - APP_NAME=stops-service
-    networks:
-      - transit
-  #    scale: 3
+    schedule-service:
+      build:
+        context: ./schedule-service
+      #    container_name: transit-carts
+      depends_on:
+        transit-mysql:
+          condition: service_healthy
+        eureka-server:
+          condition: service_started
+      restart: always
+      #    ports:
+      #      - 8081:8080
+      expose:
+        - 8080
+      env_file:
+        - .env
+      environment:
+        - DATABASE_HOST=transit-mysql
+        - DATABASE_NAME=transit
+        - DATABASE_USERNAME=Travja
+        - DATABASE_PASSWORD=test
+        - SERVER_PORT=8080
+        - REGISTRY_HOST=eureka-server
+        - APP_NAME=schedule-service
+      networks:
+        - transit
+    #    scale: 3
+
+    stops-service:
+      build:
+        context: ./stops-service
+      #    container_name: transit-checkout
+      depends_on:
+        transit-mysql:
+          condition: service_healthy
+        eureka-server:
+          condition: service_started
+      restart: always
+      #    ports:
+      #      - 8082:8080
+      expose:
+        - 8080
+      env_file:
+        - .env
+      environment:
+        - DATABASE_HOST=transit-mysql
+        - DATABASE_NAME=transit
+        - DATABASE_USERNAME=Travja
+        - DATABASE_PASSWORD=test
+        - SERVER_PORT=8080
+        - REGISTRY_HOST=eureka-server
+        - APP_NAME=stops-service
+      networks:
+        - transit
+    #    scale: 3
 
   user-service:
     build:
       context: ./user-service
     #    container_name: transit-orders
     depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - transit-mongo
+      - eureka-server
+    #      transit-mongo:
+    #        condition: service_healthy
+    #      eureka-server:
+    #        condition: service_started
     restart: always
     #    ports:
     #      - 8085:8080

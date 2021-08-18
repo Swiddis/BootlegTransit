@@ -2,29 +2,36 @@ package edu.neumont.bootleg.transit.cloudgateway.services;
 
 import edu.neumont.bootleg.transit.cloudgateway.models.SecurityUserDetails;
 import edu.neumont.bootleg.transit.cloudgateway.models.User;
-import edu.neumont.bootleg.transit.cloudgateway.repositories.UserRepository;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@Service
 public class SecurityUserDetailsService implements ReactiveUserDetailsService {
-    private final UserRepository userRepository;
+    private Map<String, UserDetails> users = new HashMap<>();
 
-    public SecurityUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public void addUser(String username, UserDetails details) {
+        users.put(getKey(username), details);
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = new HashMap<>();
+        for (User user : users) {
+            addUser(user.getUsername(), new SecurityUserDetails(user));
+        }
     }
 
     @Override
-    public Mono<UserDetails> findByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findById(username);
-        if (user.isPresent()) {
-            return Mono.just(new SecurityUserDetails(user.get()));
-        }
-        throw new UsernameNotFoundException(username);
+    public Mono<UserDetails> findByUsername(String username) {
+        String      key    = getKey(username);
+        UserDetails result = this.users.get(key);
+        return (result != null) ? Mono.just(result) : Mono.empty();
+    }
+
+    private String getKey(String username) {
+        return username.toLowerCase();
     }
 }

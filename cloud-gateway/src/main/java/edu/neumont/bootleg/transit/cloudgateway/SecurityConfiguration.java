@@ -1,45 +1,67 @@
 package edu.neumont.bootleg.transit.cloudgateway;
 
+import edu.neumont.bootleg.transit.cloudgateway.models.SecurityUserDetails;
+import edu.neumont.bootleg.transit.cloudgateway.models.User;
+import edu.neumont.bootleg.transit.cloudgateway.repositories.UserRepository;
 import edu.neumont.bootleg.transit.cloudgateway.services.SecurityUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebFluxSecurity
+@EnableReactiveMethodSecurity
 public class SecurityConfiguration {
 
-    private final BCryptPasswordEncoder bcryptEncoder;
+    private final UserRepository userRepository;
 
-    public SecurityConfiguration(BCryptPasswordEncoder bcryptEncoder) {
-        this.bcryptEncoder = bcryptEncoder;
+    public SecurityConfiguration(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Bean
-    public static BCryptPasswordEncoder bcryptEncoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public MapReactiveUserDetailsService userDetailsService() {
-//        UserDetails user = User
-//                .withUsername("user")
-//                .password("password")
-//                .roles("USER")
-//                .passwordEncoder(bcryptEncoder::encode)
-//                .build();
-//        return new MapReactiveUserDetailsService(user);
-//    }
+    @PostConstruct
+    public void init() {
+        userRepository.count().subscribe(l -> {
+            if (l == 0) {
+                User user = new User();
+                user.setUsername("admin");
+                user.setPassword(passwordEncoder().encode("admin"));
+                user.setRoles(Collections.singletonList("USER"));
+                userRepository.save(user)
+                        .subscribe(us -> securityUserDetailsService().addUser("admin", new SecurityUserDetails(us)));
+            }
+        });
+
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.scheduleAtFixedRate(() -> {
+            //Update user cache
+            userRepository.findAll().buffer()
+                    .subscribe(user -> securityUserDetailsService().setUsers(user));
+        }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    @Bean
+    public SecurityUserDetailsService securityUserDetailsService() {
+        return new SecurityUserDetailsService();
+    }
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
