@@ -62,22 +62,34 @@ const login = () => {
     return true;
 }
 
-function getLocation(callback) {
+let getLocation = (callback) => {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(callback);
+        navigator.geolocation.watchPosition((position) => userLocation = position);
     } else {
         console.log("Geolocation is not supported by this browser.");
     }
-}
+};
 
-function showPosition(position) {
+let showPosition = (position) => {
     console.log("Latitude: " + position.coords.latitude +
         "\nLongitude: " + position.coords.longitude);
-}
+};
+
+let openModal = veh => {
+    let modal = document.createElement("div");
+    modal.classList.add("modal");
+
+    document.body.appendChild(modal);
+    modal.onclick = evt => {
+        document.body.removeChild(modal);
+    };
+};
 
 let map;
+let userLocation;
 
-function loadMapScenario() {
+let loadMapScenario = () => {
     getLocation(position => {
         showPosition(position);
         map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
@@ -89,55 +101,107 @@ function loadMapScenario() {
             'red',
             'blue',
             'green'
-        ]
+        ];
+
+        let createImagePushpin = (location, imgUrl, scale, callback) => {
+            let img = new Image();
+            img.onload = () => {
+                let c = document.createElement('canvas');
+                c.width = scale.width;
+                c.height = scale.height;
+
+                let context = c.getContext('2d');
+
+                //Draw scaled image
+                context.drawImage(img, 0, 0, c.width, c.height);
+
+                let pin = new Microsoft.Maps.Pushpin(location, {
+                    //Generate a base64 image URL from the canvas.
+                    icon: c.toDataURL(),
+                    //Anchor based on the center of the image.
+                    anchor: new Microsoft.Maps.Point(c.width / 2, c.height / 2)
+                });
+
+                if (callback) {
+                    callback(pin);
+                }
+            };
+            img.src = imgUrl;
+        };
 
         //Register the custom module.
         Microsoft.Maps.registerModule('CanvasOverlayModule', 'CanvasOverlayModule.js');
 
         //Load the module.
-        Microsoft.Maps.loadModule('CanvasOverlayModule', function () {
-            let locations = Microsoft.Maps.TestDataGenerator.getLocations(10, map.getBounds());
-            console.log(locations);
+        // Microsoft.Maps.loadModule('CanvasOverlayModule', function () {
+        // let locations = Microsoft.Maps.TestDataGenerator.getLocations(10, map.getBounds());
 
-            setInterval(() =>
-                    vehicle_track((vehicles) => {
-                        map.layers.clear();
-                        locations = [];
-                        for (let veh of vehicles) {
-                            locations.push({
+        setInterval(() =>
+                vehicle_track((vehicles) => {
+                    // map.layers.clear();
+                    map.entities.clear();
+                    let userPin = new Microsoft.Maps.Pushpin(userLocation.coords, {color: 'blue'});
+                    map.entities.push(userPin);
+
+                    // locations = [];
+                    for (let veh of vehicles) {
+                        // locations.push({
+                        //     latitude: veh.lat ? veh.lat : 0,
+                        //     longitude: veh.lng ? veh.lng : 0,
+                        //     altitude: 0,
+                        //     altitudeReference: -1
+                        // });
+                        //Create custom Pushpin
+                        createImagePushpin({
                                 latitude: veh.lat ? veh.lat : 0,
                                 longitude: veh.lng ? veh.lng : 0,
-                                altitude: 0,
-                                altitudeReference: -1
+                            }, '/car.png',
+                            {width: 80, height: 25}, (pin) => {
+                                pin.setOptions({title: veh.name});
+                                map.entities.push(pin);
+                                Microsoft.Maps.Events.addHandler(pin, 'click', () => {
+                                    openModal(veh);
+                                });
                             });
-                        }
+                        // let pin = new Microsoft.Maps.Pushpin({
+                        //     latitude: veh.lat ? veh.lat : 0,
+                        //     longitude: veh.lng ? veh.lng : 0,
+                        // }, {
+                        //     title: veh.name,
+                        //     icon: 'https://www.pinclipart.com/picdir/big/109-1091177_tesla-model-x-clipart-tesla-model-s-clip.png',
+                        //     color: 'red',
+                        //     text: veh.id.toString()
+                        // });
+                        //
+                        // //Add the pushpin to the map
+                        // map.entities.push(pin);
+                    }
 
-                        //Implement the new custom overlay class.
-                        let overlay = new CanvasOverlay(function (canvas) {
-                            //Calculate pixel coordinates of locations.
-                            let points = map.tryLocationToPixel(locations, Microsoft.Maps.PixelReference.control);
-
-                            let ctx = canvas.getContext("2d");
-                            ctx.fillStyle = 'red';
-
-                            let pi2 = 2 * Math.PI;
-
-                            //Draw circles for each location.
-                            for (let i = 0, len = points.length; i < len; i++) {
-                                ctx.beginPath();
-                                ctx.arc(points[i].x, points[i].y, 5, 0, pi2);
-                                ctx.fill();
-                                ctx.closePath();
-                            }
-                        });
-
-                        //Add the custom overlay to the map.
-                        map.layers.insert(overlay);
-                    }),
-                1000);
-        });
+                    // Implement the new custom overlay class.
+                    // let overlay = new CanvasOverlay(function (canvas) {
+                    //     //Calculate pixel coordinates of locations.
+                    //     let points = map.tryLocationToPixel(locations, Microsoft.Maps.PixelReference.control);
+                    //
+                    //     let ctx = canvas.getContext("2d");
+                    //     ctx.fillStyle = 'red';
+                    //
+                    //     let pi2 = 2 * Math.PI;
+                    //
+                    //     //Draw circles for each location.
+                    //     for (let i = 0, len = points.length; i < len; i++) {
+                    //         ctx.beginPath();
+                    //         ctx.arc(points[i].x, points[i].y, 5, 0, pi2);
+                    //         ctx.fill();
+                    //         ctx.closePath();
+                    //     }
+                    // });
+                    //
+                    // //Add the custom overlay to the map.
+                    // map.layers.insert(overlay);
+                }),
+            1000);
+        // });
     });
-}
+};
 
 login();
-getLocation();
