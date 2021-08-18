@@ -6,50 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bootleg Transit</title>
     <link rel="stylesheet" href="style.css">
+    <script type='text/javascript'
+            src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=ArYlR-_eNxpLOlqWzuAeRapcqJAwNlBs4sWqYHPqZig4XPeNxUmF9NeFLgJ5JYe1'
+            async defer></script>
 </head>
-<body>
-    <div id="title">
-        <h1>Bootleg Transit</h1>
-        <h3><i>You should honestly just use your legs</i></h3>
+<body onload='loadMapScenario();'>
+<div id="title">
+    <h1>Bootleg Transit</h1>
+    <h3><i>You should honestly just use your legs</i></h3>
+</div>
+<div id="login">
+    <h3>Login</h3>
+    <input type="text" id="login_user" placeholder="Username"/>
+    <input type="password" id="login_pass" placeholder="Password"/>
+    <button onclick="login()">Login</button>
+</div>
+<div id="main" style="display: none;">
+    <div id="main_header" class="main_div">
+        <p>Header</p>
     </div>
-    <div id="login">
-        <h3>Login</h3>
-        <input type="text" id="login_user" placeholder="Username" />
-        <input type="password" id="login_pass" placeholder="Password" />
-        <button onclick="login()">Login</button>
-    </div>
-    <div id="main" style="display: none;">
-        <div id="main_header" class="main_div">
-            <div id="logout_btn">Log Out</div>
+    <div id="main_center" class="main_div">
+        <div id="center_routes" class="center_div">
+            <div class="routebox">
+                <p><b>Sample Route 1</b></p>
+                <p>Vehicle 1 <i>Next stop</i></p>
+            </div>
+            <div class="routebox">
+                <p><b>Sample Route 2</b></p>
+                <p>Vehicle 2 <i>Next stop</i></p>
+            </div>
         </div>
-        <div id="main_center" class="main_div">
-            <div id="center_routes" class="center_div">
-                <div class="routebox">
-                    <p><b>Sample Route 1</b></p>
-                    <p>Vehicle 1 <i>Next stop</i></p>
-                </div>
-                <div class="routebox">
-                    <p><b>Sample Route 2</b></p>
-                    <p>Vehicle 2 <i>Next stop</i></p>
-                </div>
+        <div id="center_map" class="center_div">
+            <div id='myMap'></div>
+        </div>
+        <div id="center_notifs" class="center_div">
+            <div class="notification">
+                <p><b>Title</b></p>
+                <p>This is a sample notification</p>
             </div>
-            <div id="center_map" class="center_div">
-                <!-- <canvas id="canvas" width="1000", height="500">
-                </canvas> -->
-                <p>Map</p>
-            </div>
-            <div id="center_notifs" class="center_div">
-                <div class="notification">
-                    <p><b>Title</b></p>
-                    <p><i>8:12</i> This is a sample notification</p>
-                </div>
-                <div class="notification">
-                    <p><b>Title 2</b></p>
-                    <p><i>8:10</i> This is another sample notification that has word wrapping</p>
-                </div>
+            <div class="notification">
+                <p><b>Title 2</b></p>
+                <p>This is another sample notification that has word wrapping</p>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
