@@ -4,6 +4,8 @@ import random
 import math
 import json
 
+LATLNG_BOUNDS = ((40.75, 40.77), (-111.90, -111.88)) # SLC
+
 def main():
     VEHICLE_COUNT = 5
 
@@ -33,8 +35,8 @@ def create_vehicle():
         "name": random.choice(["Bus", "Car", "Train"]) + f"{random.randint(0, 10**9-1):09}",
         "routeId": 0,
         "routeIdx": 0,
-        "lat": 0.0,
-        "lng": 0.0
+        "lat": 0.5 * sum(LATLNG_BOUNDS[0]),
+        "lng": 0.5 * sum(LATLNG_BOUNDS[1])
     }
 
     post_req = requests.post(
@@ -48,14 +50,14 @@ def create_vehicle():
     return json.loads(post_req.text)
 
 def update_vehicle(vehicle):
-    update_lat, update_lng = random_ellipse(5)
+    update_lat, update_lng = random_ellipse(0.002)
     if "lat" not in vehicle:
-        vehicle["lat"] = 0
+        vehicle["lat"] = 0.5 * sum(LATLNG_BOUNDS[0])
     if "lng" not in vehicle:
-        vehicle["lng"] = 0
+        vehicle["lng"] = 0.5 * sum(LATLNG_BOUNDS[1])
     updates = {
-        "lat": max(min(round(vehicle["lat"] + update_lat, 4), 180), -180),
-        "lng": max(min(round(vehicle["lng"] + update_lng, 4), 90), -90)
+        "lat": max(min(round(vehicle["lat"] + update_lat, 4), LATLNG_BOUNDS[0][1]), LATLNG_BOUNDS[0][0]),
+        "lng": max(min(round(vehicle["lng"] + update_lng, 4), LATLNG_BOUNDS[1][1]), LATLNG_BOUNDS[1][0])
     }
 
     patch_req = requests.patch(
