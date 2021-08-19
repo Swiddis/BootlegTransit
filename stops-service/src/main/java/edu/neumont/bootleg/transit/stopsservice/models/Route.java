@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,7 +20,7 @@ public class Route {
     @Column(name = "route_id")
     private Long id;
 
-    @OneToMany(mappedBy = "route")
+    @OneToMany(mappedBy = "route", fetch = FetchType.EAGER)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Stop> stops;
 
@@ -33,5 +34,12 @@ public class Route {
 
     public boolean hasStop(long stopId) {
         return stops.stream().filter(stop -> stop.getId() == stopId).count() > 0;
+    }
+
+    public void setStops(List<Stop> stops) {
+        for (Stop stop : stops) {
+            stop.setRoute(this);
+        }
+        this.stops = stops;
     }
 }

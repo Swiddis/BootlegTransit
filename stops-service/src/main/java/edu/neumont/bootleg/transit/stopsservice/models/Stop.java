@@ -33,6 +33,7 @@ public class Stop {
      *
      * @return
      */
+    @JsonIgnore
     public String getLatLong() {
         return lat + "," + lng;
     }
