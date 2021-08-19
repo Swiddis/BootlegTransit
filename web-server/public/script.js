@@ -122,12 +122,6 @@ let loadMapScenario = () => {
             zoom: 15
         });
 
-        let colors = [
-            'red',
-            'blue',
-            'green'
-        ];
-
         let createImagePushpin = (location, imgUrl, scale, callback) => {
             let img = new Image();
             img.onload = () => {
