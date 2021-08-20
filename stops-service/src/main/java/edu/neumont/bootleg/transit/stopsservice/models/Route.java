@@ -25,10 +25,12 @@ public class Route {
     private List<Stop> stops;
 
     public void addStop(Stop stop) {
+        stop.setRoute(this);
         stops.add(stop);
     }
 
     public void setStop(int index, Stop stop) {
+        stop.setRoute(this);
         stops.set(index, stop);
     }
 
@@ -37,9 +39,9 @@ public class Route {
     }
 
     public void setStops(List<Stop> stops) {
-        for (Stop stop : stops) {
-            stop.setRoute(this);
-        }
+        if (this.stops != null)
+            this.stops.forEach(stop -> stop.setRoute(null));
+        stops.forEach(stop -> stop.setRoute(this));
         this.stops = stops;
     }
 }
