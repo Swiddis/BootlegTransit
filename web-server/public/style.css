@@ -53,6 +53,7 @@ body {
   display: flex;
   min-height: 100px;
   box-sizing: border-box;
+  background-color: #588b8b;
 }
 
 #main_center {
@@ -75,19 +76,24 @@ body {
     display: flex;
     flex-direction: column;
     flex: 5;
-    background-color: #588b8b;
+    background-color: #f1f3f4;
+    padding: 0px;
 }
 
 #center_notifs {
     padding-top: 0px;
 }
 
-.notification {
+.notification, .route {
     background-color: #f1f3f4;
     padding: 5px;
     border-radius: 10px;
     margin-top: 10px;
     color: black;
+}
+
+.route.selected {
+    background-color: #90b4b4;
 }
 
 input {
@@ -108,4 +114,12 @@ p, b {
 #myMap {
     flex-grow: 1;
     width: 100%;
+}
+
+.modal {
+    width: 1000vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
 }

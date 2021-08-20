@@ -1,10 +1,15 @@
 const express = require('express');
 const routes = require('./routes/routes.js');
+const pug = require('pug')
 
 const app = express();
 const port = 3000;
 
-app.use(express.static("./public"))
+app.set('view engine', 'pug');
+app.set('views', __dirname + "/views");
+app.use(express.static("./public"));
+
+app.get('/', routes.index);
 
 app.listen(port, (err) => {
     if (err) {

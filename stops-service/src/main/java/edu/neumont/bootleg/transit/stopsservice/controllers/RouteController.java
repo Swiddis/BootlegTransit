@@ -2,7 +2,9 @@ package edu.neumont.bootleg.transit.stopsservice.controllers;
 
 import edu.neumont.bootleg.transit.EnvironmentConfiguration;
 import edu.neumont.bootleg.transit.stopsservice.models.Route;
+import edu.neumont.bootleg.transit.stopsservice.models.Stop;
 import edu.neumont.bootleg.transit.stopsservice.repositories.RouteRepository;
+import edu.neumont.bootleg.transit.stopsservice.repositories.StopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +18,7 @@ public class RouteController {
 
     public static String key;
     private final RouteRepository repo;
+    private final StopRepository stopRepo;
     private final RestTemplate restTemplate;
     private final EnvironmentConfiguration conf;
 
