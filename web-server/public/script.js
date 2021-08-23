@@ -1,5 +1,7 @@
 // let ctx = document.getElementById("canvas").getContext("2d");
 
+let directionsManager;
+
 const verify_login = () => {
     let user = document.getElementById("login_user").value;
     let pass = document.getElementById("login_pass").value;
@@ -74,7 +76,79 @@ const loadNotifications = () => {
     ).catch(
         err => console.error(err)
     );
-}
+};
+
+const loadRoutes = () => {
+    /*
+    TODO Should we add a name to the routes?
+    [{
+        "id": 27,
+        "stops": [...]
+    },...]
+     */
+    fetch("http://localhost:8070/stops-service/route")
+        .then(response => response.json())
+        .then(responses => {
+            let routes = document.getElementById("center_routes");
+            let content = "";
+
+            for (let response of responses) {
+                content += `<div class="route" onclick="selectRoute(${response.id})">
+                    <p><b>Route ${response.id}</b></p>
+                </div>`;
+            }
+
+            routes.innerHTML = content;
+        })
+        .catch(err => console.error(err));
+};
+
+const selectRoute = id => {
+    //Load the directions module.
+    Microsoft.Maps.loadModule('Microsoft.Maps.Directions', () => {
+        //Create an instance of the directions manager.
+        if (!directionsManager)
+            directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+        directionsManager.clearAll();
+
+        fetch("http://localhost:8070/stops-service/route/" + id)
+            .then(response => response.json())
+            .then(response => {
+                let first;
+                for (let stop of response.stops) {
+                    let waypoint = new Microsoft.Maps.Directions.Waypoint({
+                        address: "Stop " + stop.id,
+                        location: new Microsoft.Maps.Location(stop.lat, stop.lng)
+                    });
+                    if (!first)
+                        first = stop
+                    directionsManager.addWaypoint(waypoint);
+                }
+                if (first) {
+                    let waypoint = new Microsoft.Maps.Directions.Waypoint({
+                        address: 'Stop ' + first.id,
+                        location: new Microsoft.Maps.Location(first.lat, first.lng)
+                    });
+                    directionsManager.addWaypoint(waypoint);
+                }
+                //Specify the element in which the itinerary will be rendered.
+                directionsManager.setRenderOptions({
+                    drivingPolylineOptions: {
+                        strokeColor: 'green',
+                        strokeThickness: 8
+                    },
+                    dislayRouteSelector: false,
+                    lastWaypointPushpinOptions: {
+                        title: ''
+                    }
+                });
+
+                //Calculate directions.
+                directionsManager.calculateDirections();
+            })
+            .catch(err => console.error(err));
+    });
+};
 
 const login = () => {
     // if (!verify_login()) return;
@@ -82,6 +156,7 @@ const login = () => {
     document.getElementById("login").style.display = "none";
     document.getElementById("main").style.display = "flex";
     loadNotifications();
+    loadRoutes();
     // document.getElementById("canvas").style.display = "block";
     // setInterval(() => vehicle_track(render_vehicles), 1000);
     return true;
@@ -121,12 +196,6 @@ let loadMapScenario = () => {
             center: new Microsoft.Maps.Location(position.coords.latitude, position.coords.longitude),
             zoom: 15
         });
-
-        let colors = [
-            'red',
-            'blue',
-            'green'
-        ];
 
         let createImagePushpin = (location, imgUrl, scale, callback) => {
             let img = new Image();

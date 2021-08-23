@@ -1,8 +1,11 @@
-import requests
-import time
-import random
-import math
+import itertools as it
 import json
+import math
+import random
+import time
+
+import numpy as np
+import requests
 
 LATLNG_BOUNDS = ((40.75, 40.77), (-111.90, -111.88)) # SLC
 
@@ -16,11 +19,14 @@ def main():
     vehicles = json.loads(get_vehicles.text)
 
     vehicles += [create_vehicle() for _ in range(VEHICLE_COUNT - len(vehicles))]
+    
+    assign_routes_to(vehicles)
+    print(vehicles)
 
     while True:
         time.sleep(random.random())
         idx = random.randint(0, len(vehicles) - 1)
-        vehicles[idx] = update_vehicle(vehicles[idx])
+        update_vehicle(vehicles[idx])
 
 # Random point chosen uniformly in an ellipse of given width and height
 def random_ellipse(width, height=None):
@@ -49,16 +55,31 @@ def create_vehicle():
     print('Created Vehicle:', post_req.text)
     return json.loads(post_req.text)
 
-def update_vehicle(vehicle):
-    update_lat, update_lng = random_ellipse(0.004, 0.002)
+def update_location(vehicle):
+    target = vehicle["route"]["stops"][vehicle["routeIdx"]]
     if "lat" not in vehicle:
-        vehicle["lat"] = 0.5 * sum(LATLNG_BOUNDS[0])
+        vehicle["lat"] = target["lat"]
     if "lng" not in vehicle:
-        vehicle["lng"] = 0.5 * sum(LATLNG_BOUNDS[1])
-    updates = {
-        "lat": max(min(round(vehicle["lat"] + update_lat, 4), LATLNG_BOUNDS[0][1]), LATLNG_BOUNDS[0][0]),
-        "lng": max(min(round(vehicle["lng"] + update_lng, 4), LATLNG_BOUNDS[1][1]), LATLNG_BOUNDS[1][0])
-    }
+        vehicle["lng"] = target["lng"]
+    
+    dir_vector = np.array([target["lat"] - vehicle["lat"], target["lng"] - vehicle["lng"]])
+    dir_vector /= np.linalg.norm(dir_vector)
+    dir_vector *= random.random() * 0.0005
+    dir_vector += np.array([random.random() for _ in range(2)]) * 0.0001
+    vehicle["lat"] += dir_vector[0]
+    vehicle["lng"] += dir_vector[1]
+
+
+    if math.hypot(vehicle["lat"] - target["lat"], vehicle["lng"] - target["lng"]) < 0.0005:
+        vehicle["routeIdx"] = (vehicle["routeIdx"] + 1) % len(vehicle["route"]["stops"])
+
+    return { "lat": vehicle["lat"], "lng": vehicle["lng"] }
+
+
+def update_vehicle(vehicle):
+    updates = update_location(vehicle)
+    updates["routeIdx"] = vehicle["routeIdx"]
+    updates["routeId"] = vehicle["routeId"]
 
     patch_req = requests.patch(
         f"http://localhost:8070/vehicle-service/vehicle/{vehicle['id']}",
@@ -69,6 +90,18 @@ def update_vehicle(vehicle):
         raise ConnectionError("Failed to update vehicle: " + patch_req.text)
     print('Updated Vehicle:', patch_req.text)
     return json.loads(patch_req.text)
+
+def assign_routes_to(vehicles):
+    get_req = requests.get(
+        "http://localhost:8070/stops-service/route",
+        headers = {"Content-Type": "application/json"}
+    )
+    routes = json.loads(get_req.text)
+    for vehicle, route in zip(vehicles, it.cycle(routes)):
+        vehicle['route'] = route
+        vehicle['routeIdx'] = random.randint(0, len(route) - 1)
+        vehicle["routeId"] = route["id"]
+
 
 if __name__ == "__main__":
     main()
