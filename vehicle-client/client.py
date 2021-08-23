@@ -6,8 +6,10 @@ import time
 
 import numpy as np
 import requests
+import base64
 
 LATLNG_BOUNDS = ((40.75, 40.77), (-111.90, -111.88)) # SLC
+AUTH_HEADER = "Basic " + str(base64.b64encode(b"admin:admin"), encoding='utf-8') # TODO vehicle credentials?
 
 def main():
     VEHICLE_COUNT = 5
@@ -47,7 +49,7 @@ def create_vehicle():
 
     post_req = requests.post(
         "http://localhost:8070/vehicle-service/vehicle",
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "Authorization": AUTH_HEADER},
         data = json.dumps(vehicle)
     )
     if post_req.status_code != 200:
@@ -83,7 +85,7 @@ def update_vehicle(vehicle):
 
     patch_req = requests.patch(
         f"http://localhost:8070/vehicle-service/vehicle/{vehicle['id']}",
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "Authorization": AUTH_HEADER},
         data = json.dumps(updates)
     )
     if patch_req.status_code != 200:
