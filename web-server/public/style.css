@@ -48,13 +48,6 @@ body {
   width: 100%;
 }
 
-#main_header {
-  display: flex;
-  min-height: 100px;
-  box-sizing: border-box;
-  background-color: #588b8b;
-}
-
 #main_center {
   display: flex;
   justify-content: center;
