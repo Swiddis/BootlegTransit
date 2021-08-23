@@ -182,15 +182,9 @@ const selectRoute = id => {
                         fetch("http://localhost:8070/schedule-service/" + stopId)
                             .then(response => response.json())
                             .then(response => {
-                                console.log(response);
                                 if (response.length == 0)
                                     return;
                                 pushpin.setOptions({subTitle: Math.ceil(response[0].eta/60) + " minutes"});
-
-                                Microsoft.Maps.Events.addHandler(pushpin, 'click', function () {
-                                    alert('pushpinClick');
-                                });
-                                console.log("added event");
                             });
                     }
                 });
