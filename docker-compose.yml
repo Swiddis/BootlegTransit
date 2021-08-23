@@ -56,20 +56,21 @@ services:
       context: ./cloud-gateway
     container_name: cloud-gateway
     depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - transit-mongo
+      - eureka-server
+    #      transit-mongo:
+    #        condition: service_healthy
+    #      eureka-server:
+    #        condition: service_started
     restart: always
     ports:
       - 8070:8080
     expose:
       - 8080
     environment:
-      - DATABASE_HOST=transit-mysql
-      - DATABASE_NAME=transit
-      - DATABASE_USERNAME=Travja
-      - DATABASE_PASSWORD=test
+      - MONGO_HOST=transit-mongo
+      - MONGO_USERNAME=Travja
+      - MONGO_PASSWORD=test
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
       - APP_NAME=gateway-service
@@ -160,10 +161,12 @@ services:
       context: ./user-service
     #    container_name: transit-orders
     depends_on:
-      transit-mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - transit-mongo
+      - eureka-server
+    #      transit-mongo:
+    #        condition: service_healthy
+    #      eureka-server:
+    #        condition: service_started
     restart: always
     #    ports:
     #      - 8085:8080

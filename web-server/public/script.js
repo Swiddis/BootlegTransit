@@ -7,18 +7,39 @@ const verify_login = () => {
     let pass = document.getElementById("login_pass").value;
 
     fetch(
-        "http://localhost:8070/user-service/auth", {
+        "http://localhost:8070/user-service/user/auth", {
             headers: {
-                "Authorization": "Basic " + btoa(user + ":" + pass)
+                "Authorization": "Basic " + btoa(user + ":" + pass),
+                "Access-Control-Allow-Origin": "localhost:8070",
             }
         }
     ).then(response => {
         console.log(response);
-        return response.status == 204;
+        if (response.status === 204) {
+            resume_login();
+            return true;
+        }
+        return false;
     }).catch(err => {
         console.error(err);
         return false;
     });
+}
+
+const resume_login = () => {
+    document.getElementById("title").style.display = "none";
+    document.getElementById("login").style.display = "none";
+    document.getElementById("main").style.display = "flex";
+    loadNotifications();
+    loadRoutes();
+    loadMapScenario();
+    // document.getElementById("canvas").style.display = "block";
+    // setInterval(() => vehicle_track(render_vehicles), 1000);
+    return true;
+}
+
+const login = () => {
+    verify_login();
 }
 
 const render_vehicles = (vehicles) => {
@@ -149,18 +170,6 @@ const selectRoute = id => {
             .catch(err => console.error(err));
     });
 };
-
-const login = () => {
-    // if (!verify_login()) return;
-    document.getElementById("title").style.display = "none";
-    document.getElementById("login").style.display = "none";
-    document.getElementById("main").style.display = "flex";
-    loadNotifications();
-    loadRoutes();
-    // document.getElementById("canvas").style.display = "block";
-    // setInterval(() => vehicle_track(render_vehicles), 1000);
-    return true;
-}
 
 let getLocation = (callback) => {
     if (navigator.geolocation) {
@@ -297,5 +306,3 @@ let loadMapScenario = () => {
         // });
     });
 };
-
-login();
