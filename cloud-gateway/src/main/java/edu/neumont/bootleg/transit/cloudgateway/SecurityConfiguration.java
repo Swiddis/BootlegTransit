@@ -67,6 +67,10 @@ public class SecurityConfiguration {
         httpSecurity.csrf().disable();
 
         httpSecurity.authorizeExchange()
+                .pathMatchers(HttpMethod.OPTIONS)
+                .permitAll();
+
+        httpSecurity.authorizeExchange()
                 .pathMatchers("/user-service/user/auth")
                 .hasRole("USER")
                 .and()
