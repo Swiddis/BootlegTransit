@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -68,6 +67,16 @@ public class SecurityConfiguration {
         httpSecurity.csrf().disable();
 
         httpSecurity.authorizeExchange()
+                .pathMatchers("/user-service/user/auth")
+                .hasRole("USER")
+                .and()
+                .httpBasic();
+
+        httpSecurity.authorizeExchange()
+                .pathMatchers(HttpMethod.POST, "/user-service/user")
+                .permitAll();
+
+        httpSecurity.authorizeExchange()
                 .pathMatchers("/*/actuator/**")
                 .permitAll()
                 .pathMatchers(HttpMethod.GET)
@@ -81,5 +90,4 @@ public class SecurityConfiguration {
 
         return httpSecurity.build();
     }
-
 }

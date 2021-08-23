@@ -57,4 +57,8 @@ public class UserRestController {
     public void deleteUser(@PathVariable String username) {
         repo.deleteById(username);
     }
+
+    @GetMapping("/auth")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void authUser() {}
 }
