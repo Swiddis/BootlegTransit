@@ -42,6 +42,42 @@ const login = () => {
     verify_login();
 }
 
+const register = () => {
+    let user = document.getElementById("login_user").value;
+    let pass = document.getElementById("login_pass").value;
+    let reg_status = document.getElementById("register_status");
+    reg_status.innerText = "Registering...";
+    reg_status.style.color = "#ccc";
+
+    fetch(
+        "http://localhost:8070/user-service/user", {
+            method: "POST",
+            body: JSON.stringify({
+                username: user,
+                password: pass,
+                roles: ["USER"]
+            }),
+            headers: {
+                "Access-Control-Allow-Origin": "localhost:8070",
+                "Content-Type": "application/json",
+            },
+        }
+    ).then(response => {
+        console.log(response);
+        if (response.status === 200) {
+            reg_status.innerText = "Registered!";
+            reg_status.style.color = "#0a0";
+        } else {
+            reg_status.innerText = "Registration failed.";
+            reg_status.style.color = "#c00";
+        }
+    }).catch(err => {
+        console.log(err);
+        reg_status.innerText = "Error Occurred.";
+        reg_status.style.color = "#c00";
+    });
+}
+
 const render_vehicles = (vehicles) => {
     // let canvas = document.getElementById("canvas");
     // ctx.clearRect(0, 0, canvas.width, canvas.height);
