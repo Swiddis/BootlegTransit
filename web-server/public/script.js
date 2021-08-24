@@ -1,6 +1,7 @@
 // let ctx = document.getElementById("canvas").getContext("2d");
 
 let directionsManager;
+let entities = [];
 
 const verify_login = () => {
     let user = document.getElementById("login_user").value;
@@ -167,24 +168,27 @@ const selectRoute = id => {
         if (!directionsManager)
             directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
         directionsManager.clearAll();
+        entities = [];
 
         fetch("http://localhost:8070/stops-service/route/" + id)
             .then(response => response.json())
             .then(response => {
                 let first;
                 for (let stop of response.stops) {
+                    let location = new Microsoft.Maps.Location(stop.lat, stop.lng);
                     let waypoint = new Microsoft.Maps.Directions.Waypoint({
                         address: "Stop " + stop.id,
-                        location: new Microsoft.Maps.Location(stop.lat, stop.lng)
+                        location: location
                     });
                     if (!first)
                         first = stop
                     directionsManager.addWaypoint(waypoint);
                 }
                 if (first) {
+                    let location = new Microsoft.Maps.Location(first.lat, first.lng)
                     let waypoint = new Microsoft.Maps.Directions.Waypoint({
-                        address: 'Stop ' + first.id,
-                        location: new Microsoft.Maps.Location(first.lat, first.lng)
+                        address: "Stop " + stop.id,
+                        location: location
                     });
                     directionsManager.addWaypoint(waypoint);
                 }
@@ -200,8 +204,26 @@ const selectRoute = id => {
                     }
                 });
 
+
                 //Calculate directions.
                 directionsManager.calculateDirections();
+                Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', () => {
+                    let pushpins = directionsManager.getAllPushpins();
+                    for (let pushpin of pushpins) {
+                        console.log(pushpin);
+                        let title = pushpin.getTitle();
+                        let stopId = title.split(" ")[1];
+                        console.log(stopId);
+
+                        fetch("http://localhost:8070/schedule-service/" + stopId)
+                            .then(response => response.json())
+                            .then(response => {
+                                if (response.length == 0)
+                                    return;
+                                pushpin.setOptions({subTitle: Math.ceil(response[0].eta/60) + " minutes"});
+                            });
+                    }
+                });
             })
             .catch(err => console.error(err));
     });
@@ -221,14 +243,46 @@ let showPosition = (position) => {
         "\nLongitude: " + position.coords.longitude);
 };
 
-let openModal = veh => {
-    let modal = document.createElement("div");
-    modal.classList.add("modal");
+let modal;
 
-    document.body.appendChild(modal);
-    modal.onclick = evt => {
-        document.body.removeChild(modal);
-    };
+let closeModal = () => {
+    document.body.removeChild(modal);
+};
+
+let openModal = veh => {
+    fetch("http://localhost:8070/vehicle-service/vehicle/" + veh.id)
+        .then(response => response.json())
+        .then(vehicle => {
+            let routeId = vehicle.routeId;
+            fetch("http://localhost:8070/stops-service/route/" + routeId)
+                .then(response => response.json())
+                .then(route => {
+                    if (route.status && route.status == 500) {
+                        console.log("No route");
+                        alert("That vehicle has no route. Uh oh!");
+                        return;
+                    }
+
+                    console.log(route);
+                    modal = document.createElement("div");
+                    modal.classList.add("modal");
+
+                    document.body.appendChild(modal);
+
+                    let content = "<div id='stops-box'><div class='close' onclick='closeModal()'>X</div>";
+                    content += `<div class='route-id'>Route ${route.id}</div>`;
+                    let stops = route.stops;
+                    for (let stop of stops) {
+                        content += `<div class="stop">Stop ${stop.id}</div>`; // - <span class="eta"></span>
+                    }
+                    content += "</div>";
+
+                    modal.innerHTML = content;
+
+                })
+                .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
 };
 
 let map;
@@ -237,7 +291,7 @@ let userLocation;
 let loadMapScenario = () => {
     getLocation(position => {
         showPosition(position);
-        map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+        map = new Microsoft.Maps.Map('#myMap', {
             center: new Microsoft.Maps.Location(position.coords.latitude, position.coords.longitude),
             zoom: 15
         });
@@ -281,6 +335,7 @@ let loadMapScenario = () => {
                     map.entities.clear();
                     let userPin = new Microsoft.Maps.Pushpin(userLocation.coords, {color: 'blue'});
                     map.entities.push(userPin);
+                    map.entities.push(entities);
 
                     // locations = [];
                     for (let veh of vehicles) {
