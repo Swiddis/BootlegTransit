@@ -1,5 +1,3 @@
-// let ctx = document.getElementById("canvas").getContext("2d");
-
 let directionsManager;
 let entities = [];
 let modal;
@@ -175,10 +173,8 @@ const selectRoute = id => {
                 Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', () => {
                     let pushpins = directionsManager.getAllPushpins();
                     for (let pushpin of pushpins) {
-                        console.log(pushpin);
                         let title = pushpin.getTitle();
                         let stopId = title.split(" ")[1];
-                        console.log(stopId);
 
                         fetch("http://localhost:8070/schedule-service/" + stopId)
                             .then(response => response.json())
@@ -226,7 +222,6 @@ let openModal = veh => {
                         return;
                     }
 
-                    console.log(route);
                     modal = document.createElement("div");
                     modal.classList.add("modal");
 
