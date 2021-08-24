@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RouteController {
 
-    private final RouteRepository routeRepo;
-    private final VehicleRepository vehicleRepo;
-    private final RestTemplate restTemplate;
+    private final RouteRepository          routeRepo;
+    private final VehicleRepository        vehicleRepo;
+    private final RestTemplate             restTemplate;
     private final EnvironmentConfiguration conf;
-    private String key;
+    private       String                   key;
 
     @PostConstruct
     public void postConstruct() {
@@ -94,6 +94,21 @@ public class RouteController {
                 String destination = stp.getLatLong();
                 dat.setEta(getETA(destination, coordinates));
                 data.add(dat);
+            } else {
+                ScheduleData dat = new ScheduleData();
+                dat.setVehicle(vehicle.getId());
+
+                List<Stop> stops = route.getStops();
+
+                List<String> coordinates = new ArrayList<>();
+                for (int i = vehicle.getRouteIdx(); i < stops.size() + vehicle.getRouteIdx(); i++) {
+                    Stop st = i >= stops.size() ? stops.get(i - stops.size()) : stops.get(i);
+                    System.out.println(st.getId());
+                    coordinates.add(st.getLatLong());
+                    String destination = stp.getLatLong();
+                    dat.setEta(getETA(destination, coordinates));
+                    data.add(dat);
+                }
             }
 
         }
