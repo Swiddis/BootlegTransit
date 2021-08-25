@@ -28,7 +28,10 @@ import java.util.List;
                     "distanceUnit": "Mile",
                     "durationUnit": "Second",
                     "price": -1,
-                    "routeLegs": [...],
+                    "routeLegs": [{
+                        "travelDuration": 39,
+                        ...
+                    },...],
                     "trafficCongestion": "Mild",
                     "trafficDataUsed": "None",
                     "travelDistance": 1.757238,
@@ -79,6 +82,7 @@ public class MapsResponse {
         public double travelDistance;
         public long travelDuration,
                 travelDurationTraffic;
+        public List<RouteLeg> routeLegs;
     }
 
 }

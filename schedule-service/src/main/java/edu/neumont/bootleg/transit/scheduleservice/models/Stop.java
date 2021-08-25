@@ -19,9 +19,6 @@ public class Stop {
     @Column(name = "stop_id")
     private Long id;
 
-    @Column(name = "stop_address")
-    private String address;
-
     private Double lat, lng;
 
     @ManyToOne

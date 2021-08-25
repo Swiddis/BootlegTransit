@@ -57,7 +57,7 @@ public class RouteController {
 //        vehicleRepo.save(veh);
     }
 
-    @GetMapping("/{stop}")
+    @GetMapping("/arrivals/{stop}")
     public List<ScheduleData> findArrivals(@PathVariable long stop) {
         //Get routes with the stop in the list
         List<Route> routes = routeRepo.findAll();
@@ -93,22 +93,9 @@ public class RouteController {
 
                 String destination = stp.getLatLong();
                 dat.setEta(getETA(destination, coordinates));
+                dat.setStop(stp.getId());
+                dat.setRoute(route.getId());
                 data.add(dat);
-            } else {
-                ScheduleData dat = new ScheduleData();
-                dat.setVehicle(vehicle.getId());
-
-                List<Stop> stops = route.getStops();
-
-                List<String> coordinates = new ArrayList<>();
-                for (int i = vehicle.getRouteIdx(); i < stops.size() + vehicle.getRouteIdx(); i++) {
-                    Stop st = i >= stops.size() ? stops.get(i - stops.size()) : stops.get(i);
-                    System.out.println(st.getId());
-                    coordinates.add(st.getLatLong());
-                    String destination = stp.getLatLong();
-                    dat.setEta(getETA(destination, coordinates));
-                    data.add(dat);
-                }
             }
 
         }
@@ -117,9 +104,104 @@ public class RouteController {
 
     }
 
+    private double getDistance(Vehicle veh, Stop stop) {
+        double vlat = veh.getLat();
+        double vlng = veh.getLng();
+        double slat = stop.getLat();
+        double slng = stop.getLng();
+        double dlat = vlat - slat;
+        double dlng = vlng - slng;
+
+        return Math.sqrt((dlat * dlat) + (dlng * dlng));
+    }
+
+    /**
+     * Gets the ETA for a specific stop on a specific route
+     *
+     * @param routeId - The route ID to get the ETA for
+     * @param stopId  - The stop id on that route
+     * @return {@link ScheduleData}
+     */
+    @GetMapping("/eta/{routeId}/{stopId}")
+    public ScheduleData findStopETAOnRoute(@PathVariable long routeId, @PathVariable int stopId) {
+        //Get routes with the stop in the list
+        Route route = routeRepo.findById(routeId).orElse(null);
+        if (route == null) return new ScheduleData();
+
+        Stop dest = route.getStops().stream()
+                .filter(stp -> stp.getId() == stopId)
+                .findFirst().orElse(null);
+        if (dest == null) return new ScheduleData();
+
+        return getETA(route, dest);
+    }
+
+    /**
+     * Gets the ETA for all stops on a specific route
+     *
+     * @param routeId - The route ID to get the ETAs for
+     * @return {@link ScheduleData}
+     */
+    @GetMapping("/eta/{routeId}")
+    public List<ScheduleData> findRouteEtas(@PathVariable long routeId) {
+        List<ScheduleData> data = new ArrayList<>();
+
+        //Get routes with the stop in the list
+        Route route = routeRepo.findById(routeId).orElse(null);
+        if (route == null || route.getStops().size() == 0) return data;
+
+        List<Vehicle> vehicles = vehicleRepo.findAll();
+        Vehicle       vehicle  = vehicles.stream().filter(veh -> veh.getRouteId() == route.getId()).findFirst().orElse(null);
+        if (vehicle == null) return data;
+
+        data.addAll(getFullETAs(vehicle, route, vehicle.getRouteIdx()));
+
+        return data;
+    }
+
+
+    public ScheduleData getETA(Route route, Stop dest) {
+        //Get vehicles on the given route
+        List<Vehicle> vehicles = vehicleRepo.findAll();
+        vehicles = vehicles.stream().filter(veh -> veh.getRouteId() == route.getId()).collect(Collectors.toList());
+
+        double  distance = 1000000d;
+        Vehicle vehicle  = null;
+        //Get the closest vehicle to the given stop. This should be used for calculations.
+        for (Vehicle veh : vehicles) {
+            double dist = getDistance(veh, dest);
+            if (dist < distance) {
+                distance = dist;
+                vehicle = veh;
+            }
+        }
+
+        int          index       = route.getStops().indexOf(dest);
+        List<String> coordinates = new ArrayList<>();
+        List<Stop>   stops       = route.getStops();
+        ScheduleData data        = new ScheduleData();
+
+        data.setVehicle(vehicle.getId());
+        data.setRoute(route.getId());
+        data.setStop(dest.getId());
+
+        coordinates.add(vehicle.getLat() + "," + vehicle.getLng());
+        for (int i = vehicle.getRouteIdx(); i < index; i++) {
+            coordinates.add(stops.get(i).getLatLong());
+        }
+
+        String destination = dest.getLatLong();
+        data.setEta(getETA(destination, coordinates));
+
+        return data;
+    }
+
+
     public long getETA(String destination, List<String> prevStops) {
         StringBuilder sb = new StringBuilder("https://dev.virtualearth.net/REST/v1/Routes/Driving?")
                 .append("&du=mi")
+                .append("&maxSolns=1")
+                .append("&ig=false")
                 .append("&key=").append(key);
         sb.append("&wp.1=").append(prevStops.get(0));
 
@@ -135,4 +217,47 @@ public class RouteController {
 
         return result.getResourceSets().get(0).getResources().get(0).getTravelDuration();
     }
+
+    public List<ScheduleData> getFullETAs(Vehicle vehicle, Route route, int routeIndex) {
+        List<ScheduleData> data = new ArrayList<>();
+        List<String> prevStops = route.getStops().stream()
+                .map(Stop::getLatLong).collect(Collectors.toList());
+
+        StringBuilder sb = new StringBuilder("https://dev.virtualearth.net/REST/v1/Routes/Driving?")
+                .append("&du=mi")
+                .append("&maxSolns=1")
+                .append("&ig=false")
+                .append("&key=").append(key);
+
+        int size = prevStops.size();
+        int idx  = 0;
+        sb.append("&wp.").append(idx++).append("=").append(vehicle.getLat() + "," + vehicle.getLng());
+        for (int i = routeIndex; i < Math.min(24 + routeIndex, prevStops.size() + routeIndex); i++) {
+            sb.append("&wp.").append(idx++).append("=").append(prevStops.get(i % size));
+        }
+//        sb.append("&wp.").append(idx++).append("=").append(prevStops.get(routeIndex));
+
+        String locationUrl = sb.toString();
+        System.out.println(locationUrl);
+
+        MapsResponse result = restTemplate.getForObject(locationUrl, MapsResponse.class);
+
+        List<RouteLeg> routeLegs = result.getResourceSets().get(0).getResources().get(0).getRouteLegs();
+        long           sum       = 0;
+        for (int i = 0; i < routeLegs.size(); i++) {
+            RouteLeg     leg  = routeLegs.get(i);
+            Stop         stop = route.getStops().get((routeIndex + i) % size);
+            ScheduleData dat  = new ScheduleData();
+
+            dat.setEta((sum += leg.travelDuration));
+            dat.setRoute(route.getId());
+            dat.setVehicle(vehicle.getId());
+            dat.setStop(stop.getId());
+
+            data.add(dat);
+        }
+
+        return data;
+    }
+
 }

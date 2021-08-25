@@ -23,7 +23,15 @@ public class ScheduleData {
 
     @Getter
     @Setter
+    public long route;
+
+    @Getter
+    @Setter
+    public long stop;
+
+    @Getter
+    @Setter
     //ETA is in seconds
-    public long eta;
+    public long eta = -1;
 
 }

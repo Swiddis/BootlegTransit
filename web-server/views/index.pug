@@ -19,6 +19,7 @@ html(lang="en")
             button(onclick="login()") Login
             button(onclick="register()") Register
             p(id="register_status")
+        div(id="lost-conn" style="display: none;") Lost connection to server!
         div(id="main" style="display: none;")
             div(id="main_center" class="main_div")
                 div(id="center_routes" class="center_div")
@@ -34,4 +35,5 @@ html(lang="en")
                         p
                             b Title 2
                         p This is another sample notification that has word wrapping
+script(src="route.js")
 script(src="script.js")

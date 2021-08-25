@@ -8,102 +8,102 @@ Color scheme:
 */
 
 html {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 body {
-  background-color: #f1f3f4;
-  color: #0a2239;
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  margin: 0;
+    background-color: #f1f3f4;
+    color: #0a2239;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0;
 }
 
 #title {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 #login {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 #main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: stretch;
-  height: 100%;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
 }
 
 #main_center {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  flex-grow: 1;
-  box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-grow: 1;
+    box-sizing: border-box;
 }
 
 .center_div {
-  flex: 1;
-  overflow: auto;
-  padding: 10px;
-  background-color: #0a2239;
-  color: white;
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    background-color: #0a2239;
+    color: white;
 }
 
 #center_map {
-  display: flex;
-  flex-direction: column;
-  flex: 5;
-  background-color: #f1f3f4;
-  padding: 0px;
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+    background-color: #f1f3f4;
+    padding: 0px;
 }
 
 #center_notifs {
-  padding-top: 0px;
+    padding-top: 0px;
 }
 
 #logout_btn {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  align-content: center;
-  margin: 20px;
-  padding: 15px;
-  background-color: #f28f3b;
-  border: 2px solid #c8553d;
-  font-size: 18px;
-  border-radius: 10px;
-  transition: 0.2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    margin: 20px;
+    padding: 15px;
+    background-color: #f28f3b;
+    border: 2px solid #c8553d;
+    font-size: 18px;
+    border-radius: 10px;
+    transition: 0.2s ease-in-out;
 }
 
 #logout_btn:hover {
-  background-color: #d26f1b;
+    background-color: #d26f1b;
 }
 
 .notification,
 .routebox {
-  background-color: #f1f3f4;
-  padding: 5px;
-  border-radius: 10px;
-  margin-top: 10px;
-  color: black;
-  font-size: 18px;
-  padding: 10px;
+    background-color: #f1f3f4;
+    padding: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: black;
+    font-size: 18px;
+    padding: 10px;
 }
 
 .notification, .route {
@@ -119,19 +119,19 @@ body {
 }
 
 input {
-  padding: 5px;
-  margin: 5px;
-  border-radius: 10px;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 10px;
 }
 
 button {
-  padding: 5px;
-  margin: 5px;
+    padding: 5px;
+    margin: 5px;
 }
 
 p,
 b {
-  margin: 0px;
+    margin: 0px;
 }
 
 #myMap {
@@ -166,7 +166,7 @@ b {
     width: 100%;
 }
 
-.close{
+.close {
     float: right;
     display: flex;
     font-weight: bold;
