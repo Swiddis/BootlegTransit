@@ -124,20 +124,29 @@ const loadRoutes = () => {
         .then(response => response.json())
         .then(responses => {
             let routes = document.getElementById("center_routes");
-            let content = "";
-
-            for (let response of responses) {
-                content += `<div class="route" onclick="selectRoute(${response.id})">
-                    <p><b>${response.name ? response.name + ' (#' + response.id + ')' : 'Route ' + response.id}</b></p>
-                </div>`;
+            while (routes.firstChild) {
+                routes.removeChild(routes.lastChild);
             }
 
-            routes.innerHTML = content;
+            for (let response of responses) {
+                let routeElm = document.createElement('div');
+                routeElm.classList.add('route');
+                routeElm.onclick = (evt) => {
+                    let target = evt.target;
+                    while (!target.classList.contains('route')) {
+                        target = target.parentElement;
+                    }
+                    selectRoute(response.id, target);
+                };
+
+                routeElm.innerHTML = `<p><b>${response.name ? response.name + ' (#' + response.id + ')' : 'Route ' + response.id}</b></p>`;
+                routes.appendChild(routeElm);
+            }
         })
         .catch(err => console.error(err));
 };
 
-const selectRoute = id => {
+const selectRoute = (id, target) => {
     //Load the directions module.
     activeRoute = id;
     let selectedRoute;
@@ -154,6 +163,8 @@ const selectRoute = id => {
 
     if (selectedRoute) {
         activeRoutes.splice(selectedIndex, 1);
+        if (target)
+            target.classList.toggle("selected");
         return;
     }
 
@@ -166,6 +177,7 @@ const selectRoute = id => {
             // activeRoutes = [];
             let route = new Route(id, response.color, response.stops);
             activeRoutes.push(route);
+            target.classList.toggle("selected");
             route.draw(map);
 
             // Center the map around the route
@@ -291,7 +303,7 @@ let loadMapScenario = () => {
                             }
                         }
 
-                        if(!isActive) continue;
+                        if (!isActive) continue;
 
                         //Create custom Pushpin
                         let img = veh.name.toLowerCase().includes('car')
