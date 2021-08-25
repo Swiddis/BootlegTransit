@@ -28,7 +28,7 @@ def main():
     print(vehicles)
 
     while True:
-        time.sleep(random.random())
+        time.sleep(random.random() * 2.5 / VEHICLE_COUNT)
         idx = random.randint(0, len(vehicles) - 1)
         update_vehicle(vehicles[idx])
 
