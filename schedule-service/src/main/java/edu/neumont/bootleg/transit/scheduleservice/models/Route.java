@@ -23,7 +23,7 @@ public class Route {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Stop> stops;
 
-    private String color = "green";
+    private String name, color = "green";
 
     public void addStop(Stop stop) {
         stops.add(stop);

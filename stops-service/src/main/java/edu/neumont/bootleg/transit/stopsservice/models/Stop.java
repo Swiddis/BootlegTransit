@@ -25,6 +25,8 @@ public class Stop {
     @JsonIgnore
     private Route route;
 
+    private String name;
+
     /**
      * Gets the lat/long in the form of "lat,lng"
      *

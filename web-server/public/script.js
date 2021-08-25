@@ -128,7 +128,7 @@ const loadRoutes = () => {
 
             for (let response of responses) {
                 content += `<div class="route" onclick="selectRoute(${response.id})">
-                    <p><b>Route ${response.id}</b></p>
+                    <p><b>${response.name ? response.name + ' (#' + response.id + ')' : 'Route ' + response.id}</b></p>
                 </div>`;
             }
 
@@ -283,6 +283,16 @@ let loadMapScenario = () => {
                     map.entities.push(userPin);
 
                     for (let veh of vehicles) {
+                        let isActive = false;
+                        for (let route of activeRoutes) {
+                            if (route.id == veh.routeId) {
+                                isActive = true;
+                                break;
+                            }
+                        }
+
+                        if(!isActive) continue;
+
                         //Create custom Pushpin
                         let img = veh.name.toLowerCase().includes('car')
                             ? '/car.png'
@@ -302,6 +312,6 @@ let loadMapScenario = () => {
                             });
                     }
                 }),
-            1000);
+            2000);
     });
 };

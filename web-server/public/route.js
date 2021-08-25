@@ -9,7 +9,7 @@ class Route {
         this.waypoints = waypoints;
         this.color = color;
         this.lastUpdated = -1;
-        this.etas = [];
+        this.stops = [];
     }
 
     updateEtas = () => {
@@ -17,13 +17,13 @@ class Route {
             return;
 
         this.lastUpdated = Date.now();
-        fetch("http://localhost:8070/schedule-service/eta/" + this.id)
+        fetch("http://localhost:8070/schedule-service/fulleta/" + this.id)
             .then(response => response.json())
             .then(response => {
                 if (response.length == 0)
                     return;
                 console.log(response);
-                this.etas = response;
+                this.stops = response;
             });
 
     };
@@ -53,12 +53,12 @@ class Route {
             let pushpin = new Microsoft.Maps.Pushpin(loc,
                 {
                     color: 'red',
-                    title: 'Stop ' + stop.id
+                    title: (stop.name ? stop.name: 'Stop ' + stop.id)
                 });
             let eta = -1;
-            for (let time of this.etas) {
-                if (time.stop == stop.id) {
-                    eta = time.eta;
+            for (let time of this.stops) {
+                if (time.id == stop.id) {
+                    eta = time.nextArrival;
                 }
             }
             if (eta != -1) {

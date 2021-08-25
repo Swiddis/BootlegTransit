@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -157,6 +158,108 @@ public class RouteController {
         data.addAll(getFullETAs(vehicle, route, vehicle.getRouteIdx()));
 
         return data;
+    }
+
+    /**
+     * Get the ETAs for each of the stops on the route.
+     * Just a warning, this can be a pretty intensive request as it makes 2 requests to Bing
+     * to get no only the ETAs between stops, but also the ETAs for the vehicles to those stops.
+     *
+     * @param routeId - The route ID to get etas for
+     * @return The list of modified Stops with ETAs attached.
+     */
+    @GetMapping("/fulleta/{routeId}")
+    public List<Stop> getFullEtas(@PathVariable long routeId) {
+        Route route = routeRepo.findById(routeId).orElse(null);
+        if (route == null) return Collections.emptyList();
+
+        List<Vehicle> vehicles = vehicleRepo.findAll().stream()
+                .filter(vehicle -> vehicle.getRouteId() == routeId).collect(Collectors.toList());
+        if (vehicles.isEmpty()) return Collections.emptyList();
+
+        updateStopEtas(route);
+
+        List<Location> origins = vehicles.stream()
+                .map(vehicle -> new Location(vehicle.getLat(), vehicle.getLng())).collect(Collectors.toList());
+        List<Stop> stops = route.getStops().stream().filter(stop -> {
+            Vehicle vehicle = vehicles.stream().filter(veh -> veh.getRouteIdx() == route.getStops().indexOf(stop)).findFirst().orElse(null);
+            return vehicle != null; // We only need to calculate the matrix for stops that vehicles are moving to next. Other ETAs are derived.
+        }).collect(Collectors.toList());
+        List<Location> destinations = stops.stream().map(stop -> new Location(stop.getLat(), stop.getLng())).collect(Collectors.toList());
+
+        MatrixRequest request = new MatrixRequest();
+        request.setOrigins(origins);
+        request.setDestinations(destinations);
+
+        String url = new StringBuilder("https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix")
+                .append("?key=").append(key).toString();
+        MatrixResponse response = restTemplate.postForObject(url, request, MatrixResponse.class);
+
+        List<MatrixResponse.MatrixResult> results = response.getResourceSets().get(0).getResources().get(0).getResults();
+
+        route.getStops().forEach(stop -> stop.setNextArrival(-1));
+
+        for (MatrixResponse.MatrixResult data : results) {
+            Vehicle vehicle         = vehicles.get(data.getOriginIndex());
+            int     stopIdx         = data.getDestinationIndex();
+            Stop    stop            = stops.get(stopIdx);
+            int     actualStopIndex = route.getStops().indexOf(stop);
+
+            if (actualStopIndex == vehicle.getRouteIdx()) { // This stop is next on the vehicle's route.
+                if (stop.getNextArrival() == -1 || stop.getNextArrival() > data.getTravelDuration())
+                    stop.setNextArrival(data.getTravelDuration()); //Update the next arrival time if there is no current arrival or it's sooner than the current.
+            }
+        }
+
+        Stop prevStop = route.getStops().stream().filter(stop -> stop.getNextArrival() != -1).findFirst().orElse(null);
+        if (prevStop == null) return route.getStops();
+        int stopIdx = route.getStops().indexOf(prevStop);
+        route.getStops().forEach(stop -> System.out.println(stop.getId() + ") " + stop.getNextArrival()));
+        for (int i = stopIdx; i < route.getStops().size() + stopIdx; i++) {
+            Stop stop = route.getStops().get(i % route.getStops().size());
+
+            if (stop.getNextArrival() == -1) {
+                long duration = prevStop.getTimeToNext() + prevStop.getNextArrival();
+                stop.setNextArrival(duration);
+            }
+
+            prevStop = stop;
+        }
+        System.out.println(" ======= AFTER ======== ");
+        route.getStops().forEach(stop -> System.out.println(stop.getId() + ") " + stop.getNextArrival()));
+
+        return route.getStops();
+    }
+
+    public void updateStopEtas(Route route) {
+        boolean needsUpdating = route.getStops().stream().filter(stop -> stop.getTimeToNext() == -1).collect(Collectors.toList()).size() > 0;
+        if (!needsUpdating) return;
+
+        List<Location> destinations = route.getStops().stream()
+                .map(stop -> new Location(stop.getLat(), stop.getLng())).collect(Collectors.toList());
+        Stop first = route.getStops().get(0);
+        destinations.add(new Location(first.getLat(), first.getLng()));
+
+
+        MatrixRequest request = new MatrixRequest();
+//        request.setOrigins(origins);
+        request.setDestinations(destinations);
+        request.setOrigins(destinations);
+
+        String url = new StringBuilder("https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix")
+                .append("?key=").append(key).toString();
+        MatrixResponse response = restTemplate.postForObject(url, request, MatrixResponse.class);
+
+        List<MatrixResponse.MatrixResult> results = response.getResourceSets().get(0).getResources().get(0).getResults();
+
+        for (MatrixResponse.MatrixResult data : results) {
+            int stopIdx     = data.getDestinationIndex();
+            int origStopIdx = data.getOriginIndex();
+            if (stopIdx != origStopIdx + 1) continue;
+
+            Stop origin = route.getStops().get(origStopIdx);
+            origin.setTimeToNext(data.getTravelDuration());
+        }
     }
 
 

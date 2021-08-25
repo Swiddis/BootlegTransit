@@ -1,7 +1,6 @@
 package edu.neumont.bootleg.transit.scheduleservice.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.neumont.bootleg.transit.scheduleservice.LocationUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +23,12 @@ public class Stop {
     @ManyToOne
     @JsonIgnore
     private Route route;
+
+    private String name;
+
+    @Transient
+    private long timeToNext = -1,
+            nextArrival     = -1;
 
     /**
      * Gets the lat/long in the form of "lat,lng"

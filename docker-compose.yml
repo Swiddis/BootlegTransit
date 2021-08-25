@@ -209,25 +209,25 @@ services:
       - transit
     scale: 2
 
-  web-server:
-    build:
-      context: ./web-server
-    container_name: web-server
-    depends_on:
-      - vehicle-service
-      - stops-service
-      - schedule-service
-      - notifications-service
-      - user-service
-      - cloud-gateway
-      - eureka-server
-    restart: always
-    ports:
-      - 3000:3000
-    expose:
-      - 3000
-    networks:
-      - transit
+#  web-server:
+#    build:
+#      context: ./web-server
+#    container_name: web-server
+#    depends_on:
+#      - vehicle-service
+#      - stops-service
+#      - schedule-service
+#      - notifications-service
+#      - user-service
+#      - cloud-gateway
+#      - eureka-server
+#    restart: always
+#    ports:
+#      - 3000:3000
+#    expose:
+#      - 3000
+#    networks:
+#      - transit
 
 networks:
   transit:
