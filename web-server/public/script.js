@@ -1,10 +1,17 @@
-let directionsManager;
-let entities = [];
 let modal;
 let activeRoute;
 let activeRoutes = [];
 let map;
 let userLocation;
+
+document.getElementById('login_user').addEventListener('keypress', (evt) => {
+    if (evt.code == 'Enter')
+        verify_login()
+});
+document.getElementById('login_pass').addEventListener('keypress', (evt) => {
+    if (evt.code == 'Enter')
+        verify_login()
+});
 
 const verify_login = () => {
     let user = document.getElementById("login_user").value;
@@ -274,7 +281,6 @@ let loadMapScenario = () => {
                     }
                     let userPin = new Microsoft.Maps.Pushpin(userLocation.coords, {color: 'blue'});
                     map.entities.push(userPin);
-                    map.entities.push(entities);
 
                     for (let veh of vehicles) {
                         //Create custom Pushpin
