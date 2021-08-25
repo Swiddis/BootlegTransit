@@ -98,7 +98,7 @@ services:
       - APP_NAME=notifications-service
     networks:
       - transit
-  #    scale: 3
+    scale: 2
 
   schedule-service:
     build:
@@ -124,9 +124,9 @@ services:
       - SERVER_PORT=8080
       - REGISTRY_HOST=eureka-server
       - APP_NAME=schedule-service
+    scale: 2
     networks:
       - transit
-  #    scale: 3
 
   stops-service:
     build:
@@ -154,7 +154,7 @@ services:
       - APP_NAME=stops-service
     networks:
       - transit
-  #    scale: 3
+    scale: 2
 
   user-service:
     build:
@@ -181,7 +181,7 @@ services:
       - APP_NAME=user-service
     networks:
       - transit
-  #    scale: 3
+    scale: 2
 
   vehicle-service:
     build:
@@ -207,7 +207,7 @@ services:
       - APP_NAME=vehicle-service
     networks:
       - transit
-  #    scale: 3
+    scale: 2
 
   web-server:
     build:
