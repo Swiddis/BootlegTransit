@@ -14,7 +14,7 @@ SPEED = 0.0005
 
 
 def main():
-    VEHICLE_COUNT = 5
+    VEHICLE_COUNT = 20
 
     get_vehicles = requests.get(
         "http://localhost:8070/vehicle-service/vehicle",
@@ -115,7 +115,7 @@ def assign_routes_to(vehicles):
         vehicle['route'] = route
 
     for vehicle, route in zip(vehicles, it.cycle(routes)):
-        if 'stops' not in route or 'route' in vehicle:
+        if 'stops' not in route or vehicle['route'] is not None:
             continue
         vehicle['route'] = route
         vehicle['routeIdx'] = random.randint(0, len(route) - 1)

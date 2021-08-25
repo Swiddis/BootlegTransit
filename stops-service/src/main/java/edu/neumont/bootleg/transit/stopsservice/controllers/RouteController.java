@@ -16,10 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RouteController {
 
-    public static String key;
-    private final RouteRepository repo;
-    private final StopRepository stopRepo;
-    private final RestTemplate restTemplate;
+    public static String                   key;
+    private final RouteRepository          repo;
+    private final StopRepository           stopRepo;
+    private final RestTemplate             restTemplate;
     private final EnvironmentConfiguration conf;
 
     @PostConstruct
@@ -48,6 +48,10 @@ public class RouteController {
 
         if (route.getStops() != null) {
             updating.setStops(route.getStops());
+        }
+
+        if (route.getColor() != null) {
+            updating.setColor(route.getColor());
         }
 
         repo.save(updating);
