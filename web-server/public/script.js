@@ -3,6 +3,7 @@ let activeRoute;
 let activeRoutes = [];
 let map;
 let userLocation;
+let mapLoaded = false;
 
 document.getElementById('login_user').addEventListener('keypress', (evt) => {
     if (evt.code == 'Enter')
@@ -13,11 +14,17 @@ document.getElementById('login_pass').addEventListener('keypress', (evt) => {
         verify_login()
 });
 
+function loadedMap() {
+    mapLoaded = true;
+    console.log("Map script loaded");
+}
+
 const verify_login = () => {
     let user = document.getElementById("login_user").value;
     let pass = document.getElementById("login_pass").value;
 
-    fetch("http://localhost:8070/user-service/user/auth", {
+    fetch(document.location.origin + "/login", {
+        // credentials: 'include',
         headers: {
             "Authorization": "Basic " + btoa(user + ":" + pass),
             "Access-Control-Allow-Origin": "localhost:8070",
@@ -247,6 +254,10 @@ let openModal = veh => {
 };
 
 let loadMapScenario = () => {
+    if (!mapLoaded) {
+        setTimeout(loadMapScenario, 500);
+        return;
+    }
     getLocation(position => {
         showPosition(position);
         map = new Microsoft.Maps.Map('#myMap', {
