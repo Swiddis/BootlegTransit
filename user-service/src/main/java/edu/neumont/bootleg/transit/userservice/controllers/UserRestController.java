@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.openmbean.KeyAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,8 @@ public class UserRestController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
+        if (repo.findById(user.getUsername()).isPresent())
+            throw new KeyAlreadyExistsException("A user with that name already exists!");
         return repo.save(user);
     }
 
@@ -60,5 +64,6 @@ public class UserRestController {
 
     @GetMapping("/auth")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void authUser() {}
+    public void authUser() {
+    }
 }

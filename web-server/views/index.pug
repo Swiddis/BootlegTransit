@@ -5,7 +5,6 @@ html(lang="en")
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
         title Bootleg Transit
         link(rel="stylesheet" href="style.css")
-        script(type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=ArYlR-_eNxpLOlqWzuAeRapcqJAwNlBs4sWqYHPqZig4XPeNxUmF9NeFLgJ5JYe1' async defer)
     body
         div(id="title")
             h1 Bootleg Transit
@@ -37,3 +36,7 @@ html(lang="en")
                         p This is another sample notification that has word wrapping
 script(src="route.js")
 script(src="script.js")
+script(type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?callback=loadedMap&key=ArYlR-_eNxpLOlqWzuAeRapcqJAwNlBs4sWqYHPqZig4XPeNxUmF9NeFLgJ5JYe1' async defer)
+if user && user.user
+    script(type='text/javascript').
+        resume_login();
