@@ -3,6 +3,7 @@ import json
 import math
 import random
 import time
+import concurrent.futures as cfutures
 
 import numpy as np
 import requests
@@ -20,17 +21,18 @@ def main():
         "http://localhost:8070/vehicle-service/vehicle",
         headers={"Content-Type": "application/json"}
     )
-    vehicles = json.loads(get_vehicles.text)
+    vehicles = json.loads(get_vehicles.text)[:VEHICLE_COUNT]
 
     vehicles += [create_vehicle() for _ in range(VEHICLE_COUNT - len(vehicles))]
 
     assign_routes_to(vehicles)
     print(vehicles)
 
-    while True:
-        time.sleep(random.random() * 2.5 / VEHICLE_COUNT)
-        idx = random.randint(0, len(vehicles) - 1)
-        update_vehicle(vehicles[idx])
+    with cfutures.ThreadPoolExecutor() as executor:
+        while True:
+            # time.sleep(1)
+            for vehicle in vehicles:
+                executor.submit(update_vehicle, vehicle, random.random())
 
 
 # Random point chosen uniformly in an ellipse of given width and height
@@ -82,9 +84,10 @@ def update_location(vehicle):
     return {"lat": vehicle["lat"], "lng": vehicle["lng"]}
 
 
-def update_vehicle(vehicle):
+def update_vehicle(vehicle, delay):
     if vehicle['route'] is None:
         return
+    time.sleep(delay)
     updates = update_location(vehicle)
     updates["routeIdx"] = vehicle["routeIdx"]
     updates["routeId"] = vehicle["routeId"]
