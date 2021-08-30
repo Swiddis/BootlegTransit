@@ -238,10 +238,10 @@ let openModal = veh => {
                     document.body.appendChild(modal);
 
                     let content = "<div id='stops-box'><div class='close' onclick='closeModal()'>X</div>";
-                    content += `<div class='route-id'>Route ${route.id}</div><hr>`;
+                    content += `<div class='route-id'>${route.name ? route.name : 'Route ' + route.id}</div><hr>`;
                     let stops = route.stops;
                     for (let stop of stops) {
-                        content += `<li class="stop">Stop ${stop.id}</li>`; // - <span class="eta"></span>
+                        content += `<li class="stop">${stop.name ? stop.name : 'Stop ' + stop.id}</li>`; // - <span class="eta"></span>
                     }
                     content += "</div>";
 
