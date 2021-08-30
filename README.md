@@ -1,4 +1,4 @@
-# BootlegTransit
+# Bootleg Transit
 A small transit application made for a course in service-based software architecture. It's split up into various services, scripts, and sub-projects, all combining to make the full application.
 
 # Building and Running
@@ -7,7 +7,7 @@ Clone the repository
 git clone https://github.com/SwiddisZwei/BootlegTransit.git
 ```
 
-And run the appropriate startup script for your platform
+Run the appropriate startup script for your platform. You'll need Docker.
 ```bash
 cd BootlegTransit
 .\docker.bat
