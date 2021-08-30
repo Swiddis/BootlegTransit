@@ -13,7 +13,7 @@ exports.login = (req, res) => {
     // res.setHeader('Access-Control-Allow-Credentials', 'true')
     user = Buffer.from(user, 'base64').toString().split(':', 2)[0];
 
-    fetch("http://localhost:8070/user-service/user/auth", {
+    fetch("http://cloud-gateway:8080/user-service/user/auth", {
         headers: {
             "Authorization": auth,
             "Access-Control-Allow-Origin": "localhost:8070",
