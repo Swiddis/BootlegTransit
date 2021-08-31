@@ -60,7 +60,7 @@ body {
     flex: 1;
     overflow: auto;
     padding: 10px;
-    background-color: #0a2239;
+    background-color: #565656;
     color: white;
     max-height: 100vh;
     box-sizing: border-box;
@@ -77,10 +77,12 @@ body {
 #center_notifs {
     padding-top: 0px;
     overflow: auto;
+    box-shadow: inset 5px 0px 7px #333;
 }
 
 #center_routes {
     overflow: auto;
+    box-shadow: inset -5px 0px 7px #333;
 }
 
 #logout_btn {
@@ -106,7 +108,6 @@ body {
 .routebox {
     background-color: #f1f3f4;
     padding: 5px;
-    border-radius: 10px;
     margin-top: 10px;
     color: black;
     font-size: 18px;
@@ -116,10 +117,12 @@ body {
 .notification, .route {
     background-color: #f1f3f4;
     padding: 5px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     margin-top: 10px;
     color: black;
     word-wrap: break-word;
+    box-shadow: 7px 7px 7px #000;
+    border: 2px solid #888;
 }
 
 .route.selected {

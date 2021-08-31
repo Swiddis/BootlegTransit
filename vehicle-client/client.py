@@ -28,8 +28,8 @@ def main():
     assign_routes_to(vehicles)
     print(vehicles)
 
-    with cfutures.ThreadPoolExecutor() as executor:
-        while True:
+    while True:
+        with cfutures.ThreadPoolExecutor() as executor:
             # time.sleep(1)
             for vehicle in vehicles:
                 executor.submit(update_vehicle, vehicle, random.random())
